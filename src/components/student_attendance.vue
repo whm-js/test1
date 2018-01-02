@@ -128,6 +128,7 @@
             }
           },
           inputBlur:function (evt) {
+            clearInterval(this.focusTime);
             var textInputIdArr=['affair_leave','sick_leave','sabbatical_leave','late','absent_work']
             var isAllZero = true;
             for(var i =0;i<textInputIdArr.length;i++){
@@ -144,6 +145,12 @@
                   if(_id==='late'){this.late=val}
                   if(_id==='absent_work'){this.absentWork=val}
                 }
+              }else{
+                if(_id==='affair_leave'){this.affairLeave=0}
+                if(_id==='sick_leave'){this.sickLeave=0}
+                if(_id==='sabbatical_leave'){this.sabbaticalLeave=0}
+                if(_id==='late'){this.late=0}
+                if(_id==='absent_work'){this.absentWork=0}
               }
             }
             if(!isAllZero){
@@ -159,27 +166,12 @@
 
           },
           inputFocus:function (evt) {
-            clearInterval(time);
             var getNumStaff =function () {
               var _value = evt.target.value;
-              var _id = evt.target.id;
-              if(_value!==''){
-                var lst_val = _value.substring(_value.length-1);
-                var isNum = lst_val.replace(/[^0-9]/g);
-                if(isNum=='undefined'){
-                  evt.target.value= _value.substr(0,_value.length-1)
-                }else{
-
-                }
-              }else{
-
-              }
-              document.getElementById(_id).blur=function () {
-                clearInterval(time);
-              }
+              _value=_value.replace(/[^0-9]/g,'');
+              evt.target.value=_value;
             }
-            var time = setInterval(getNumStaff, 100);
-
+            this.focusTime = setInterval(getNumStaff, 100);
           },
           initAttendInfo:function () {
             var attendInfo = window.localStorage.getItem('attendInfo');
