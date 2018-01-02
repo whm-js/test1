@@ -1,0 +1,10 @@
+vue 教程地址：https://cn.vuejs.org/v2/guide/
+https://zhuanlan.zhihu.com/p/21802181
+http://mint-ui.github.io/docs/#/zh-cn2
+
+1、安装nodejs 6.0
+2、npm install 安装完全部模块
+3、npm run dev 运行开发模式
+4、localhost:8081 谷歌浏览器打开看到程序界面
+5、内网接口调用 http://192.168.98.48:3000/info/getUserinfobyrole?userid=2613&userrole= 
+6、npm run build  编译一次，生成dist文件夹，可直接发布到线上站点
