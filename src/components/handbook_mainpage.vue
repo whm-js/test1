@@ -254,7 +254,7 @@ var fromUrl='';
           return year + '.' + month + '.' + day;
         },
         showSpecificName(el){
-          if(el.Genre!=''){
+          if(el.Genre!==''&&el.Genre!==null){
             return el.SpecificName + '（' + el.Genre + '）'
           }else{
             return el.SpecificName
