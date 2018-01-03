@@ -149,7 +149,8 @@
             parentQuery.isreload = 'true';
             this.$router.push({
               path:'handbook_input',
-              name:'handbook_input'
+              name:'handbook_input',
+              query:{departmentName:this.departmentName}
             });
           },
           adddetaildata(){
@@ -157,7 +158,7 @@
             this.$router.push({
               path:'handbook_input',
               name:'handbook_input',
-              query:{type:'add'}
+              query:{type:'add',departmentName:this.departmentName}
             });
           }
         }

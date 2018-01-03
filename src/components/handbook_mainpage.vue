@@ -6,16 +6,13 @@
      <mt-button icon="back"></mt-button>
     </router-link>
   </mt-header>
-
    <mt-cell :title="DemandNameTitle" @click.native="showChange"
-   style=" background-color: #eee; color:#37acd3;min-height: 45px;" class="handbooke-mainpage-title">
+   style="background-color: #eee; color:#37acd3;min-height: 45px;" class="handbooke-mainpage-title">
    <i slot="icon" style="font-size: 16px" class="icon iconfont icon-list_icon"></i>
    </mt-cell>
 
   <div v-for="(el,n) in DetailData">
     <a class="mint-cell" @click="Detailpage(el,n)">
-      <!--<span class="mint-cell-mask"></span>-->
-      <!--<div class="mint-cell-left"></div>-->
       <div class="mint-cell-wrapper">
         <div class="mint-cell-title" v-if="el.CreateDate" style="width: calc(100% - 60px);">
           <span class="mint-cell-text">住院病历号：{{el.MedicalRecord}}</span>
@@ -254,7 +251,7 @@ var fromUrl='';
           return year + '.' + month + '.' + day;
         },
         showSpecificName(el){
-          if(el.Genre!==''&&el.Genre!==null){
+          if(el.Genre!==''&&el.Genre!==null&&el.Genre!==undefined){
             return el.SpecificName + '（' + el.Genre + '）'
           }else{
             return el.SpecificName
@@ -286,7 +283,8 @@ var fromUrl='';
           this.$store.commit('updatareloadMainpage','');
           this.$router.push({
             path:'handbook_input',
-            name:'handbook_input'
+            name:'handbook_input',
+            query:{departmentName:this.DepartmentName}
           });
         },
         deletedemand_rescue_record(i){
@@ -440,7 +438,8 @@ var fromUrl='';
               this.$store.commit('updatareloadMainpage','');
               this.$router.push({
                 path:'handbook_input',
-                name:'handbook_input'
+                name:'handbook_input',
+                query:{departmentName:this.DepartmentName}
               });
                 break;
             case 1:
@@ -477,7 +476,7 @@ var fromUrl='';
             this.$router.push({
               path:'handbook_input',
               name:'handbook_input',
-              query:{type:'update'}
+              query:{type:'update',departmentName:this.DepartmentName}
             });
           }else {
             switch (el.PatternType) {

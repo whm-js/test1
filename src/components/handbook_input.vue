@@ -1,6 +1,6 @@
 <template>
 <div class="handbook_input">
-  <mt-header fixed title="血液内科" style="background-color:#37acd3">
+  <mt-header fixed :title="departmentName" style="background-color:#37acd3">
       <mt-button icon="back" slot="left" @click.native="goBack"></mt-button>
   </mt-header>
 
@@ -44,6 +44,7 @@
         return{
           fromUrl:'',
           dateindex:-1,
+          departmentName:'',
           endDate:new Date(),
           dateValue: new Date(),
           startDate: new Date('1900-01-01'),
@@ -64,6 +65,7 @@
       activated(){
         this.guid = this.getGuid();
         type = this.$route.query.type;
+        this.departmentName = this.$route.query.departmentName;
         this.handbooktable = this.$store.state.handbooktable;
         if (!this.handbooktable.TableFlag) {
           this.handbooktable = this.getLocalStorageValue('handbooktable')
@@ -334,24 +336,16 @@
 }
 .handbook_input .mint-field.is-textarea .mint-cell-value {
   padding-left: 10px;
-  /*border: 1px solid #26a2ff;*/
 }
 .handbook_input .mint-cell-value {
   padding-left: 10px;
-  /*border: 1px solid #26a2ff;*/
 }
 .handbook_input .mint-cell-value input {
   text-align: right;
   background-color: white;
-  /*width:100% !important;*/
-  /*border: 1px solid #00b050;*/
-  /*float: right;*/
 }
 .handbook_input .mint-cell-value textarea {
   text-align: right;
-  /*width:100% !important;*/
-  /*border: 1px solid #00b050;*/
-  /*float: right;*/
 }
 .handbook_input .mint-button--primary {
   background-color: #5cb85c;
