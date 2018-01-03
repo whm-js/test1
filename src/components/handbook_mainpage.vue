@@ -22,7 +22,7 @@
           <span class="mint-cell-label sandian">病人姓名：{{el.Patient}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作日期：{{FDate(el.CreateDate)}}</span>
         </div>
         <div class="mint-cell-title" v-else style="width: calc(100% - 60px);">
-          <span class="mint-cell-text">{{el.SpecificName}}</span>
+          <span class="mint-cell-text">{{showSpecificName(el)}}</span>
           <span class="mint-cell-label sandian">要求完成：{{showDetailData1(el)}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;完成情况：{{showDetailData2(el)}}</span>
         </div>
         <div class="mint-cell-value">
@@ -252,6 +252,13 @@ var fromUrl='';
           var day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
 
           return year + '.' + month + '.' + day;
+        },
+        showSpecificName(el){
+          if(el.Genre!=''){
+            return el.SpecificName + '（' + el.Genre + '）'
+          }else{
+            return el.SpecificName
+          }
         },
         showDetailData1:function (el) {
           switch (el.PatternType){
