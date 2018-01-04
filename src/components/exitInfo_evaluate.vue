@@ -61,9 +61,7 @@
 
       <div class="exit-footer">
         <div style="float:left;width:50%;border-right:1px solid #fff;" v-on:click="preStep()">上一项</div>
-        <router-link to="/exitInfo_summary" slot="left" style="color:#fff;">
-          <div style="float:left;width:49%;">下一项</div>
-        </router-link>
+        <div style="float:left;width:49%;" v-on:click="nextStep()">下一项</div>
       </div>
     </div>
     <div style="height:100px;"></div>
@@ -150,6 +148,21 @@
             this.$router.push({
               path:'/exitInfo',
               name:'exitInfo',
+              query:{
+                planStartDate:this.$route.query.planStartDate,
+                userId:this.$route.query.userId,
+                departmentId:this.$route.query.departmentId,
+                teacherId:this.$route.query.teacherId,
+                teacherName:this.$route.query.teacherName,
+                planDataIndex:this.$route.query.planDataIndex
+              }
+            });
+          },
+          //进入下一个页面
+          nextStep:function(){
+            this.$router.push({
+              path:'/exitInfo_summary',
+              name:'exitInfo_summary',
               query:{
                 planStartDate:this.$route.query.planStartDate,
                 userId:this.$route.query.userId,

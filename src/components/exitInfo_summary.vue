@@ -26,16 +26,10 @@
         </div>
       </div>
       <div style="height:100px;"></div>
-      <!--router-link to="/exitInfo_evalute" slot="left">
-        <div class="exit-footer">
-          上一项
-        </div>
-      </router-link-->
-      <router-link to="/" slot="left">
-        <div class="exit-footer">
-          返回轮转科室
-        </div>
-      </router-link>
+      <div class="exit-footer">
+        <div style="float:left;width:49%;border-right:1px solid #fff;" v-on:click="preStep()">上一项</div>
+        <div style="float:left;width:50%;" v-on:click="nextStep()">返回轮转科室</div>
+      </div>
     </div>
 
   </div>
@@ -56,6 +50,21 @@
               path:'/',
               name:'',
               query:{
+                planDataIndex:this.$route.query.planDataIndex
+              }
+            });
+          },
+          //返回上一个页面
+          preStep:function(){
+            this.$router.push({
+              path:'/exitInfo_evalute',
+              name:'exitInfo_evalute',
+              query:{
+                planStartDate:this.$route.query.planStartDate,
+                userId:this.$route.query.userId,
+                departmentId:this.$route.query.departmentId,
+                teacherId:this.$route.query.teacherId,
+                teacherName:this.$route.query.teacherName,
                 planDataIndex:this.$route.query.planDataIndex
               }
             });

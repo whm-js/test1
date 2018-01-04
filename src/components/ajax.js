@@ -3,11 +3,11 @@
  */
 
 var baseUrl = 'http://101.37.24.216:3009/' //服务器地址
-if(location.hostname=='newtest.ksbao.com'||location.hostname=='localhost'){
+if (location.hostname == 'newtest.ksbao.com' || location.hostname == 'localhost') {
   baseUrl = 'http://101.37.24.216:3003/'
 }
-export default{
-  install(Vue){
+export default {
+  install(Vue) {
     /**
      * get请求，统一处理接口返回的状态码
      * @param url  请求路径
@@ -15,29 +15,32 @@ export default{
      * @param callback
      * @param toUrl 登录失效前往的页面，默认/login
      */
-    Vue.prototype.$httpGet = function(url,params,callback,toUrl){
+    Vue.prototype.$httpGet = function (url, params, callback, toUrl) {
       var self = this
       var go = toUrl || '/login';
       this.$Indicator.open('加载中...');
-      this.$http.get(baseUrl+url, {
-        params:params, //请求参数
-        timeout:60*60*1000 ,//请求超时
+      this.$http.get(baseUrl + url, {
+        params: params, //请求参数
+        timeout: 60 * 60 * 1000,//请求超时
 
-      }).then(function(response){
+      }).then(function (response) {
         self.$Indicator.close();
         var data = JSON.parse(response.bodyText);
-        if(data.status == 200){
-          callback(null,data)
-        }else if(data.status == 201){
-
+        if (data.status == 200) {
+          callback(null, data)
+        } else if (data.status == 201) {
           //登录失效
-          this.$messagebox({
-            title: '提示',
-            message:data.msg,
-          }).then(action => {
+          if (data.msg === '登录状态失效，请重新登录。') {
             self.$router.push(go);
-          });
-        }else{
+          } else {
+            this.$messagebox({
+              title: '提示',
+              message: data.msg,
+            }).then(action => {
+              self.$router.push(go);
+            });
+          }
+        } else {
           self.$Toast({
             message: '服务器异常',
             position: 'bottom',
@@ -45,7 +48,7 @@ export default{
           });
           callback(data.msg)
         }
-      }, function(err){
+      }, function (err) {
         self.$Indicator.close();
         callback(err);
       })
@@ -57,28 +60,32 @@ export default{
      * @param callback
      * @param toUrl 登录失效前往的页面，默认/login
      */
-    Vue.prototype.$httpPost = function(url,body,callback,toUrl){
+    Vue.prototype.$httpPost = function (url, body, callback, toUrl) {
       this.$Indicator.open('加载中...');
       var self = this
       var go = toUrl || '/login';
-      this.$http.post(baseUrl+url,body, {
-        timeout:60*60*1000, //请求超时
-        emulateJSON:true  //请求会以application/x-www-form-urlencoded作为MIME type
-      }).then(function(response){
+      this.$http.post(baseUrl + url, body, {
+        timeout: 60 * 60 * 1000, //请求超时
+        emulateJSON: true  //请求会以application/x-www-form-urlencoded作为MIME type
+      }).then(function (response) {
         self.$Indicator.close();
         var data = JSON.parse(response.bodyText);
-        if(data.status == 200){
-          callback(null,data)
-        }else if(data.status == 201){
+        if (data.status == 200) {
+          callback(null, data)
+        } else if (data.status == 201) {
 
           //登录失效
-          this.$messagebox({
-            title: '提示',
-            message: data.msg,
-          }).then(action => {
+          if (data.msg === '登录状态失效，请重新登录。') {
             self.$router.push(go);
-          });;
-        }else{
+          } else {
+            this.$messagebox({
+              title: '提示',
+              message: data.msg,
+            }).then(action => {
+              self.$router.push(go);
+            });
+          }
+        } else {
           self.$Toast({
             message: '服务器异常',
             position: 'bottom',
@@ -86,7 +93,7 @@ export default{
           });
           callback(data.msg)
         }
-      }, function(err){
+      }, function (err) {
         self.$Indicator.close();
         callback(err);
       })
