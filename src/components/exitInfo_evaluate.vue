@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="overflow-x: hidden;">
     <mt-header fixed title="评价带教老师" style="background-color:#37acd3">
       <router-link to="/" slot="left">
         <mt-button icon="back"></mt-button>

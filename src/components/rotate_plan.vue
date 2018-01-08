@@ -99,7 +99,8 @@
           }
       },
       activated(){
-          this.guid = this.getGuid();
+        this.$store.commit('updataindexSelected','rotate_plan');
+        this.guid = this.getGuid();
         document.body.scrollTop=0;
         document.documentElement.scrollTop=0;
         that.planData=this.$store.state.planData;

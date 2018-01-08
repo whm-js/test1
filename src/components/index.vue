@@ -1,6 +1,6 @@
 <template>
   <div>
-    <mt-header fixed :title="selectedName" style="background-color:#37acd3">
+    <mt-header fixed :title="selectedName" style="background-color:#37acd3; font-size:18px;">
       <router-link to="" slot="left">
         <!--i class="icon iconfont icon-my_icon"></i-->
         <img v-show="selected!='userinfo'" width="35px;" src="../assets/user.png"/>
@@ -52,6 +52,9 @@
         computed:{
           listenshowpage() {
             return this.$store.state.isSelect;
+          },
+          listenindexSelected(){
+            return this.$store.state.indexSelected;
           }
         },
         created(){
@@ -136,7 +139,7 @@
           this.$store.commit('updataisSelect',-1);
         },
         listenshowpage:function (newData) {
-          if(newData != -1){
+          if(newData !== -1){
             this.selected = 'rotate_department';
             this.selectedName = '轮转科室'
             this.$router.push({
@@ -144,6 +147,25 @@
               name:'rotate_department',
               query:{planDataIndex:newData}
             });
+          }
+        },
+        listenindexSelected:function(newData){
+          if(this.$store.state.isSelect!==-1){
+            return
+          }
+          if(newData!==this.selected){
+            switch (newData){
+              case 'rotate_department':
+                this.selectedName = '轮转科室'
+                    break;
+              case 'rotate_plan':
+                this.selectedName = '轮转计划'
+                break;
+              case 'userinfo':
+                this.selectedName = '个人中心'
+                break;
+            }
+            this.selected = newData;
           }
         }
       },

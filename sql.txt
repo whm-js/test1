@@ -1,0 +1,8 @@
+select * from rotate_demand_copy where DepartmentId=30;
+select * from demand_disease_copy where demandid=1343;
+select * from demand_clinical_copy where demandid=1344;
+select * from demand_skill_copy where demandid=1345
+
+INSERT INTO demand_learning(DemandId,HospitalId,CourseId,DepartmentId) SELECT DemandId, HospitalId, CourseId,DepartmentId from rotate_demand where TableFlag='demand_learning' and DemandId=1747
+
+update demand_learning set  SpecificName = '学术活动'  where SerialId> 268

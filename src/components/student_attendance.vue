@@ -96,7 +96,8 @@
                 late:0,
                 absentWork:0,
                 eval_queryInfo:{},
-                attendInfo:{}
+                attendInfo:{},
+                sourVal:0
             }
         },
         created(){
@@ -146,11 +147,12 @@
                   if(_id==='absent_work'){this.absentWork=val}
                 }
               }else{
-                if(_id==='affair_leave'){this.affairLeave=0}
+                document.getElementById(_id).value=0;
+/*                if(_id==='affair_leave'){this.affairLeave=0}
                 if(_id==='sick_leave'){this.sickLeave=0}
                 if(_id==='sabbatical_leave'){this.sabbaticalLeave=0}
                 if(_id==='late'){this.late=0}
-                if(_id==='absent_work'){this.absentWork=0}
+                if(_id==='absent_work'){this.absentWork=0}*/
               }
             }
             if(!isAllZero){
@@ -166,6 +168,7 @@
 
           },
           inputFocus:function (evt) {
+              this.sourVal=evt.target.value;
             var getNumStaff =function () {
               var _value = evt.target.value;
               _value=_value.replace(/[^0-9]/g,'');
@@ -301,53 +304,10 @@
      width:100%;
      color:#fff;
   }
-  .attend-wrap .font-grey{color:#ddd;}
   .attend-wrap .text-center{text-align:center;}
   .attend-wrap .text-right{text-align:right;}
-  .attend-wrap .text-success {
-    color: #5cb85c;
-  }
-  .attend-wrap .bold{font-weight:700 !important;}
-  .attend-wrap .border{  border:1px solid #eeeeee;}
   .attend-wrap .border-btm{border-bottom:1px solid #eeeeee;}
-  .attend-wrap .btn-success {
-    color: #fff;
-    background-color: #5cb85c;
-    border-color: #4cae4c;
-  }
-  .attend-wrap .btn-warning {
-    color: #fff;
-    background-color: #f0ad4e;
-    border-color: #eea236;
-  }
-  .attend-wrap .btn-lg{
-    padding: 7px 13px;
-    font-size: 16px;
-    line-height: 1.3333333;
-    border-radius: 4px;
-  }
-  .attend-wrap .btn-sm{
-    padding: 5px 10px;
-    font-size: 12px;
-    line-height: 1.5;
-    border-radius: 3px;
-  }
-  .attend-wrap .btn-xs{
-    padding: 1px 5px;
-    font-size: 12px;
-    line-height: 1.5;
-    border-radius: 3px;
-  }
-  .attend-wrap .btn-blue{
-    color: #fff;
-    background-color: #37acd3;
-    border-color: #37acd3;
-  }
-  .attend-wrap .btn-blue:hover {
-    color: #37acd3;
-    background-color: #fff;
-    border-color: #37acd3;
-  }
+
   .attend-wrap .ul{padding:10px;}
   .attend-wrap .li{ float:left;width:100%;}
   .attend-wrap .li-wrap{ padding:10px;height:30px;}
@@ -365,38 +325,6 @@
     box-sizing: border-box;
     padding: 0;
   }
-
   .attend-wrap .panel{float:left;background:#fff;width:100%;border-radius:6px;}
-  .attend-wrap .panel-title{padding:10px;}
-  .attend-wrap .panel-sub-title{
-    padding:10px;
-  }
 
-  .attend-wrap .panel-content{padding:10px;}
-
-  .attend-wrap .form-control {
-    display: block;
-    width:100%;
-    height: 30px;
-    padding: 5px 10px;
-    font-size: 16px;
-    line-height: 1.5;
-    color: #555;
-    background-color: #fff;
-    background-image: none;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
-    -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
-    -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-  }
-  .attend-wrap .form-control[readonly]{
-    background-color: #eee;
-    opacity: 1;
-  }
-  .bg-primary{
-    background:#eee;
-  }
 </style>

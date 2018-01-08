@@ -6,7 +6,7 @@
       </router-link>
     </mt-header>
     <div class="eval-wrap top-wrap" >
-      <div style="padding:5px 10px 5px 5px;">
+      <div style="padding:5px;">
         <div class="top-title">
           <div style="float:left;margin-left:10px;">评价项目及考核指标</div>
           <div style="float:right;margin-right:10px;">总分{{rateJson.totalScore}}</div>
@@ -45,7 +45,7 @@
       </div>
     </div>
     <div style="width:100%;height:140px;float:left;"></div>
-    <div class="eval-wrap" style="position:fixed;bottom:50px;left:0;width:100%;height:90px;background:#eee;z-index:9998;">
+    <div class="eval-wrap" style="position:fixed;bottom:50px;left:0;width:100%;height:90px;background:#eee;z-index:9;">
       <div style="padding:10px 5px 5px 5px;">
         <div class="eval-panel" >
           <div class="eval-panel-title text-center">整体评价</div>
@@ -90,11 +90,9 @@
         components: {},
         data(){
             return{
-                //rateJson:[],
-                rateJson:{scoreValue:[],overallEval:'合格',suggestion:'', totalScore:0},
-                popupVisible:false,
-                TeachingJson : {},
-                eval_queryInfo:{}
+                rateJson:{scoreValue:[],overallEval:'合格',suggestion:'', totalScore:0},//评分数据集
+                TeachingJson : {},//评分项json
+                eval_queryInfo:{}//轮转计划参数集
             }
         },
         created(){
@@ -111,6 +109,7 @@
               }
             });
           },
+          //跳转小结页面
           toSummary:function () {
             this.saveRateInfo();
             this.submitSuggestion();
@@ -122,19 +121,19 @@
               }
             });
           },
+          //评星change事件
           rateChange:function (e) {
             var evt =event.currentTarget.parentElement;
-            var groupIdx = evt.getAttribute('groupidx');
-            var itmIdx =  evt.getAttribute('itmidx');
-            var lastRate =  evt.getAttribute('lastrate');
-            if(lastRate){
-              if(lastRate==='1'){
+            var groupIdx = evt.getAttribute('groupidx');//星级控件组索引
+            var itmIdx =  evt.getAttribute('itmidx');//星级控件项索引
+            var lastRate =  evt.getAttribute('lastrate');//前一次评分
+            if(lastRate){//前一次评分是1并且当前打分为1，让评分归0
+              if(lastRate==='1'&&e===1){
                   e=0
               }
-              evt.setAttribute('lastrate',e);
-            }else{
-              evt.setAttribute('lastrate',e);
             }
+            evt.setAttribute('lastrate',e);
+
             var rateArr =[];
             for(var i =0;i<this.rateJson.scoreValue.length;i++){
                 rateArr.push(this.rateJson.scoreValue[i]);
@@ -146,29 +145,15 @@
             this.TeachingJson.TeachingItems =_teachingJson;
             this.countTotalScore(rateArr);
           },
+          //初始化评分数据
           initRate:function () {
             var eval_queryInfo=window.localStorage.getItem('eval_queryInfo');
 
            if(eval_queryInfo){this.eval_queryInfo=JSON.parse(eval_queryInfo)}
-            /*  if(this.eval_queryInfo.modeTag==='add'){
-                this.TeachingJson=Teachingdata;
-              if(_rateJson){
-                this.rateJson=JSON.parse(_rateJson);
-              }else{
-                var rateArr=[
-                  {value:[0,0,0,0,0],groupScore:0},
-                  {value:[0,0,0,0,0],groupScore:0},
-                  {value:[0,0,0,0,0],groupScore:0},
-                  {value:[0,0,0,0,0],groupScore:0}
-                ];
-                this.rateJson.scoreValue=rateArr;
-              }
-              this.countTotalScore(this.rateJson.scoreValue);
-            }else if(this.eval_queryInfo.modeTag==='edit'){
-                this.getSuggestionInfo()
-            }*/
+
             this.getSuggestionInfo();
           },
+          //计算总分
           countTotalScore:function (rateArr) {
               var total_score=0;
               for(var i=0;i<rateArr.length;i++){
@@ -182,10 +167,12 @@
               }
               this.rateJson.totalScore=total_score;
           },
+          //评级
           overallEvalChange:function (evt) {
             var _value= evt.currentTarget.textContent;
             this.rateJson.overallEval=_value
           },
+          //提交评分
           submitSuggestion:function () {
             var vueMdl = this;
             var rateJson=vueMdl.rateJson;
@@ -197,7 +184,7 @@
             }
             var params = {
               PlanStartDate: eval_queryInfo.PlanStartDate,////计划开始时间，用于存评价年份
-              AppraisalType: 0,
+              AppraisalType: 0,//学生评价老师
               UserId: eval_queryInfo.UserId,
               DepartmentId: eval_queryInfo.DepartmentId,
               TeacherId: eval_queryInfo.CoachingId,
@@ -224,6 +211,7 @@
               }
             }, 'json')
           },
+          //请求评分、建议、评级数据
           getSuggestionInfo:function () {
             var _rateJson=window.localStorage.getItem('rateJson');
             var  _Teachingdata =Teachingdata
@@ -295,6 +283,7 @@
               }
             }, 'json')
           },
+          //保存用户填写建议及评分数据
           saveRateInfo:function () {
             var suggestion = this.shieldingWords(document.getElementById('adviceTextArea').value);
             this.rateJson.suggestion=suggestion;
@@ -346,7 +335,7 @@
     list-style : none;
   }
   .top-wrap{
-    position:fixed;top:40px;left:0;width:100%;z-index:9998;height:55px;background:#eee;
+    position:fixed;top:40px;left:0;width:100%;z-index:9;height:55px;background:#eee;
   }
   .eval-wrap{
 
@@ -365,43 +354,14 @@
     width:100%;
     color:#fff;
   }
-  .eval-wrap .font-grey{color:#ddd;}
   .eval-wrap .text-left{text-align:left;}
   .eval-wrap .text-center{text-align:center;}
-  .eval-wrap .text-right{text-align:right;}
-  .eval-wrap .text-success {
-    color: #5cb85c;
-  }
-  .eval-wrap .bold{font-weight:700 !important;}
-  .eval-wrap .border{  border:1px solid #eeeeee;}
   .eval-wrap .border-btm{border-bottom:1px solid #eeeeee;}
-  .eval-wrap .btn-success {
-    color: #fff;
-    background-color: #5cb85c;
-    border-color: #4cae4c;
-  }
-  .eval-wrap .btn-warning {
-    color: #fff;
-    background-color: #f0ad4e;
-    border-color: #eea236;
-  }
   .eval-wrap .btn-lg{
     padding: 7px 13px;
     font-size: 16px;
     line-height: 1.3333333;
     border-radius: 4px;
-  }
-  .eval-wrap .btn-sm{
-    padding: 5px 10px;
-    font-size: 12px;
-    line-height: 1.5;
-    border-radius: 3px;
-  }
-  .eval-wrap .btn-xs{
-    padding: 1px 5px;
-    font-size: 12px;
-    line-height: 1.5;
-    border-radius: 3px;
   }
   .eval-wrap .btn-default{
     color: #fff;
@@ -436,9 +396,6 @@
   .eval-wrap .eval-panel-title{padding:10px 10px 0px 10px;color:#37acd3;}
   .eval-wrap .text-area{
     width:100%;overflow:hidden;height:100px;outline:none;resize:none;
-  }
-  .eval-wrap .blank-bg{
-    width:100%;height:5px;background:#eee;float:left;
   }
   .eval-wrap .el-rate__icon{
     margin-right:30px;

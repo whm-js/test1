@@ -113,20 +113,19 @@
         components: {},
         data(){
             return{
-                selected:'',
-                popupVisible:false,
-                clickModalHide:true,
-                queryInfo:[],
-                dataIndex:0,
+                popupVisible:false,//控制点击选择计划弹窗显示/关闭参数
+                clickModalHide:true,//控制点击选择计划弹窗关闭参数
+                queryInfo:[],//所有计划数据
+                dataIndex:0,//选择计划索引
                 curRotateIndex:-1,//当前轮转索引
-                exitSuccess:false,
-                curQueryInfo:[],
-                curPlanStartDate:0,
-                isCurPlan:false,
+                exitSuccess:false,//是否出科成功标识
+                curQueryInfo:[],//当前选择计划数据
+                isCurPlan:false,//是否当前轮转计划表示
                 guid:0
             }
         },
         methods:{
+          //计划弹窗显示
         showPopup:function () {
           if(this.curQueryInfo.length===0){
               this.$messagebox('温馨提示','暂无您的轮转计划，请联系科教科。');
@@ -134,6 +133,7 @@
           }
           this.popupVisible=true;
         },
+          //科室名称包含研究方向的处理
           showDepartmentName:function(el){
             if(el.ResearchArea!=''){
               return el.DepartmentName + '（' + el.ResearchArea + '）'
@@ -164,6 +164,7 @@
           entryDate=dateStr.join('-');
           return entryDate;
         },
+        //轮转计划数据请求
         getQueryInfo:function () {
           var vueMdl = this;
           var url = 'rotate/getQueryinfo';
@@ -194,13 +195,11 @@
 
           })
         },
+        //绑定数据
         bindQueryInfo:function (data) {
-
-              this.queryInfo=data;
-              var queryInfo=this.queryInfo;
+          this.queryInfo=data;
+          var queryInfo=this.queryInfo;
           if(queryInfo.length>0){
-              var curDate=this.$formatDate(new Date(),'yyyy-MM-dd');
-              var _planStartDate=this.getPlanStartDate(curDate);
               for(var i=0;i<queryInfo.length;i++){
                 if(queryInfo[i].PlanStartDate){
                   queryInfo[i].PlanStartDate=this.$formatDate(new Date(queryInfo[i].PlanStartDate.replace(/-/g,'/')),'yyyy-MM-dd');
@@ -214,37 +213,34 @@
                 if(queryInfo[i].RealityEndDate){
                   queryInfo[i].RealityEndDate=this.$formatDate(new Date(queryInfo[i].RealityEndDate.replace(/-/g,'/')),'yyyy-MM-dd');
                 }
-                if(i===0){
-                  this.curPlanStartDate=queryInfo[i].PlanStartDate;
+                if(i===0){//默认第一条计划，选择为当前显示
                   this.changeCurPlan(queryInfo[i],i);
                 }
-                if(queryInfo[i].RotateStatus>=100&&queryInfo[i].RotateStatus<200){
-                  this.curPlanStartDate=_planStartDate;
+                if(queryInfo[i].RotateStatus>=100&&queryInfo[i].RotateStatus<200){//当前计划已申请出科的并未出科成功的，选择为当前显示
                   this.changeCurPlan(queryInfo[i],i);
                 }
-                if(i<queryInfo.length-1){
+                if(i<queryInfo.length-1){//当前计划已出科成功的并且后一条计划还未申请出科的，选择为当前显示
                   if(queryInfo[i].RotateStatus===200&&(queryInfo[i+1].RotateStatus>=0&&queryInfo[i+1].RotateStatus<100)){
-                    this.curPlanStartDate=_planStartDate;
                     this.changeCurPlan(queryInfo[i],i);
                   }
                 }
-                if(i===queryInfo.length-1){
+                if(i===queryInfo.length-1){//最后一条并且已出科成功的，选择为当前显示
                   if(queryInfo[i].RotateStatus===200){
-                    this.curPlanStartDate=_planStartDate;
                     this.changeCurPlan(queryInfo[i],i);
                   }
                 }
               }
               var planDataIndex = this.dataIndex;
               var exitSuccess = this.exitSuccess;
-              if(exitSuccess){
+              if(exitSuccess){//申请出科成功后，返回首页，锁定到申请出科的科室
                 this.changeCurPlan(queryInfo[planDataIndex],planDataIndex);
               }
             }else{
               this.$messagebox('温馨提示','暂无您的轮转计划，请联系科教科。');
             }
-          this.$store.commit('updataPlanData',queryInfo);
+          this.$store.commit('updataPlanData',queryInfo);//存储所有计划数据
         },
+        //绑定当前选择的计划数据
         changeCurPlan:function (itm,idx,isClick) {
           this.curQueryInfo=itm;
           this.dataIndex=idx;
@@ -258,6 +254,7 @@
             this.popupVisible=false;
           }
         },
+          //申请出科
           toAttendance:function (mode) {
             var _curQueryInfo = {
               UserId:this.curQueryInfo.UserId,
@@ -278,6 +275,7 @@
             }
           });
         },
+          //轮转手册
         toHandBook:function () {
           var curQueryInfo = this.curQueryInfo;
           if(curQueryInfo.length===0){
@@ -296,6 +294,7 @@
             }
           });
         },
+          //出科详情
         toExitInfo:function () {
           var curQueryInfo = this.curQueryInfo;
           this.$router.push({
@@ -317,11 +316,10 @@
 
       },
       activated(){
-
-        var planDataIndex = this.$route.query.planDataIndex;
-        var exitSuccess = this.$route.query.exitSuccess;
-        if(this.queryInfo.length == 0||this.guid!==this.getGuid()){
-          this.selected='';
+        this.$store.commit('updataindexSelected','rotate_department');
+        var planDataIndex = this.$route.query.planDataIndex;//页面跳转首页索引参数
+        var exitSuccess = this.$route.query.exitSuccess;//申请出科成功跳转首页标识参数
+        if(this.queryInfo.length == 0||this.guid!==this.getGuid()){//页面无数据或换账号重新请求数据
           this. popupVisible=false;
           this.clickModalHide=true;
           this.queryInfo=[];

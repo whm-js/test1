@@ -69,7 +69,7 @@
                 if(data.data.role == "学员"){
                   self.setGuid(data.data.guid)
                   self.$store.commit('updataguid',data.data.guid);
-                  self.$router.push('/');
+                  self.$router.push('/index/rotate_department/');
                 }else{
                   //提示未开发
                   self.$messagebox({

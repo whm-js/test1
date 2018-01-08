@@ -17,7 +17,7 @@ export default {
      */
     Vue.prototype.$httpGet = function (url, params, callback, toUrl) {
       var self = this
-      var go = toUrl || '/login';
+      var go = '/login';
       this.$Indicator.open('加载中...');
       this.$http.get(baseUrl + url, {
         params: params, //请求参数
@@ -36,6 +36,7 @@ export default {
             this.$messagebox({
               title: '提示',
               message: data.msg,
+              closeOnClickModal:false
             }).then(action => {
               self.$router.push(go);
             });
@@ -63,7 +64,7 @@ export default {
     Vue.prototype.$httpPost = function (url, body, callback, toUrl) {
       this.$Indicator.open('加载中...');
       var self = this
-      var go = toUrl || '/login';
+      var go = '/login';
       this.$http.post(baseUrl + url, body, {
         timeout: 60 * 60 * 1000, //请求超时
         emulateJSON: true  //请求会以application/x-www-form-urlencoded作为MIME type
@@ -81,6 +82,7 @@ export default {
             this.$messagebox({
               title: '提示',
               message: data.msg,
+              closeOnClickModal:false
             }).then(action => {
               self.$router.push(go);
             });

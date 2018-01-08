@@ -49,6 +49,7 @@
       created(){
       },
       activated(){
+        this.$store.commit('updataindexSelected','userinfo');
         //避免因为滑动，页面不显示在最顶部
           document.body.scrollTop=0;
           document.documentElement.scrollTop=0;

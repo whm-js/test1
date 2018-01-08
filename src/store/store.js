@@ -7,6 +7,7 @@ Vue.use(Vuex);
 
 const state = {
   count:1,
+  indexSelected:'',
   isSelect:-1,
   reloadMainpage:'',
   UserID:'007',
@@ -25,6 +26,9 @@ const mutations={
   },
   updataisSelect(state,isSelect){
     state.isSelect=isSelect;
+  },
+  updataindexSelected(state,indexSelected){
+    state.indexSelected=indexSelected;
   },
   updatareloadMainpage(state,reloadMainpage){
     state.reloadMainpage=reloadMainpage;
@@ -61,6 +65,9 @@ const getters = {
   },
   isSelect:function (state) {
     return state.isSelect;
+  },
+  indexSelected:function (state) {
+    return state.indexSelected;
   },
   reloadMainpage:function (state) {
     return state.reloadMainpage;
