@@ -1,6 +1,6 @@
 <template>
 <div class="handbook_input">
-  <mt-header fixed :title="departmentName" style="background-color:#37acd3">
+  <mt-header fixed :title="departmentName" style="background-color:#37acd3;font-size:16px;">
       <mt-button icon="back" slot="left" @click.native="goBack"></mt-button>
   </mt-header>
 

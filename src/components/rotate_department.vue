@@ -12,7 +12,7 @@
           </div>
 
         </div>
-        <div class="panel-content">
+        <div class="panel-content" v-show="(curQueryInfo.UserId)">
           <span class="font-grey">{{curQueryInfo.PlanStartDate}}至{{curQueryInfo.PlanEndDate}}</span>
           <span class="btn-warning btn-sm">{{curQueryInfo.PlanDuration}}个月</span>
         </div>
@@ -135,10 +135,14 @@
         },
           //科室名称包含研究方向的处理
           showDepartmentName:function(el){
-            if(el.ResearchArea!=''){
-              return el.DepartmentName + '（' + el.ResearchArea + '）'
+            if(el.length===0){
+              return '';
             }else{
-              return el.DepartmentName
+              if(el.ResearchArea!=''){
+                return el.DepartmentName + '（' + el.ResearchArea + '）'
+              }else{
+                return el.DepartmentName
+              }
             }
           },
         dealDateStr:function(str) {

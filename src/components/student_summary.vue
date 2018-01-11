@@ -1,6 +1,6 @@
 <template>
   <div>
-    <mt-header fixed title="个人小结" style="background:#37acd3;">
+    <mt-header fixed title="个人小结" style="background:#37acd3;font-size:16px;">
       <router-link to="/student_evaluate" slot="left">
         <mt-button icon="back" v-on:click="saveSummaryInfo"></mt-button>
       </router-link>

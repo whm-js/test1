@@ -1,10 +1,8 @@
 
 <template>
 <div class="handbooke-mainpage">
-  <mt-header fixed :title="DepartmentName" style="background-color:#37acd3">
-    <router-link to="/" slot="left">
-     <mt-button icon="back"></mt-button>
-    </router-link>
+  <mt-header fixed :title="DepartmentName" style="background-color:#37acd3;font-size:16px;">
+     <mt-button slot="left" icon="back" @click.native="goBack"></mt-button>
   </mt-header>
    <mt-cell :title="DemandNameTitle" @click.native="showChange"
    style="background-color: #eee; color:#37acd3;min-height: 45px;" class="handbooke-mainpage-title">
@@ -23,8 +21,8 @@
           <span class="mint-cell-label sandian">要求完成：{{showDetailData1(el)}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;完成情况：{{showDetailData2(el)}}</span>
         </div>
         <div class="mint-cell-value">
-          <mt-button type="primary" v-if="el.CreateDate" @click.native.stop="deletedemand_rescue_record(n)">删除</mt-button>
-        <mt-button @click.native.stop="InputDetail(el,n)" type="primary" :disabled="rotateStatus==0||rotateStatus==2" v-else>录入</mt-button>
+          <mt-button type="primary" v-if="el.CreateDate" v-show="role==='学员'" @click.native.stop="deletedemand_rescue_record(n)">删除</mt-button>
+        <mt-button @click.native.stop="InputDetail(el,n)" v-show="role==='学员'" type="primary" :disabled="rotateStatus==0||rotateStatus==2" v-else>录入</mt-button>
         </div>
       </div>
       <div class="mint-cell-right"></div>
@@ -32,7 +30,7 @@
   </div>
 
   <div class="mint-tabbar is-fixed">
-    <mt-button type="primary" size="large" @click.native="adddemand_rescue_record" :disabled="rotateStatus==0||rotateStatus==2" v-show="DemandNameTitle==='抢救病人记录表'">新增记录</mt-button>
+    <mt-button type="primary" size="large" @click.native="adddemand_rescue_record" :disabled="rotateStatus==0||rotateStatus==2" v-show="DemandNameTitle==='抢救病人记录表'&&role==='学员'">新增记录</mt-button>
   </div>
     <mt-popup
         v-model="popupVisible"
@@ -84,6 +82,7 @@ var fromUrl='';
       data(){
         return {
           UserID:'',
+          role:'',
           CourseId:'',
           DepartmentId:'',
           DepartmentName:'',
@@ -140,6 +139,7 @@ var fromUrl='';
           if((fromUrl==='/handbook_input'||fromUrl==='/handbook_detail')&&isreload!='true'&&this.DepartmentName!=''){
               return;
           }
+          this.role = this.getLocalStorageValue('userinfo').role;
         this.guid = this.getGuid();
         //刷新／激活数据写在此处,每次打开页面请求最新的数据
           var aa = this.$route.query.userId;
@@ -178,7 +178,7 @@ var fromUrl='';
             return;
           }
           that.handBookData = json.data.data;
-          if(that.DemandNameindex1!=0&&fromUrl!='/index/rotate_department'){
+          if(that.DemandNameindex1!=0&&fromUrl!='/index/rotate_department'&&this.role==='学员'){
             for(var a in that.handBookData){
               that.$set(that.handBookData[a], 'Active', '');
             }
@@ -220,6 +220,8 @@ var fromUrl='';
               }
             }
           }
+          that.showChange();
+
           var params = {
             TableName: tablename,
             guid: that.guid,
@@ -242,6 +244,24 @@ var fromUrl='';
         });
       },
       methods: {
+        goBack:function(){
+          var path = this.role === '学员' ? '/index/rotate_department/':'/teacher_index/teacher_exit/';
+            this.$router.push({
+              path:path,
+              name:'',
+            });
+          // if(role === '学员'){
+          //   this.$router.push({
+          //     path: 'handbook_mainpage',
+          //     name: 'handbook_mainpage'
+          //   });
+          // }else {
+          //   this.$router.push({
+          //     path: 'handbook_mainpage',
+          //     name: 'handbook_mainpage'
+          //   });
+          // }
+        },
         FDate: function (date) {
           var d = new Date(date);
           var year = d.getFullYear();
@@ -274,6 +294,9 @@ var fromUrl='';
           }
         },
         adddemand_rescue_record(){
+          if(this.role!=='学员'){
+              return
+            }
 //          this.$store.commit('updatahandbookdetail',el);
 //          this.setLocalStorageValue('handbookdetail',el);
           if(this.rotateStatus==0||this.rotateStatus==2){
@@ -288,6 +311,9 @@ var fromUrl='';
           });
         },
         deletedemand_rescue_record(i){
+          if(this.role!=='学员'){
+              return
+            }
           this.Detailindex = i;
           this.$messagebox.confirm('您确定要删除此记录吗?').then(action => {
             var params = {
@@ -426,6 +452,9 @@ var fromUrl='';
           });
         },
         InputDetail(el,index) {
+          if(this.role!=='学员'){
+              return
+            }
           if(this.rotateStatus==0||this.rotateStatus==2){
             this.$Toast("您尚未入科，不可录入信息！");
             return;
@@ -465,12 +494,18 @@ var fromUrl='';
           }
         },
         Detailpage(el,index){
+          if(this.role!=='学员'){
+              return
+            }
             if(this.rotateStatus==0||this.rotateStatus==2){
               this.$Toast("您尚未入科，不可录入信息！");
               return;
             }
           this.Detailindex = index;
           if(el.SpecificName == '抢救病人记录'){
+            if(this.role!=='学员'){
+              return
+            }
             this.$store.commit('updatadetaildata',el);
             this.setLocalStorageValue('detaildata',el);
             this.$router.push({
@@ -498,6 +533,9 @@ var fromUrl='';
                 });
                 break;
               case 1:
+              if(this.role!=='学员'){
+              return
+              }
                 this.$store.commit('updatahandbookdetail', el);
                 this.setLocalStorageValue('handbookdetail', el);
                 this.OptionName = el.OptionName.split('|');
@@ -505,6 +543,9 @@ var fromUrl='';
                 this.popupVisible1 = true;
                 break;
               case 2:
+              if(this.role!=='学员'){
+              return
+            }
                 this.$store.commit('updatahandbookdetail', el);
                 this.setLocalStorageValue('handbookdetail', el);
                 if (this.$store.state.handbooktable.TableFlag == 'demand_teaching') {
@@ -658,7 +699,7 @@ body {
   padding: 0 10px;
   width: 100%;
 }
-.handbooke-mainpage .mint-cell-mask {}
+/* .handbooke-mainpage .mint-cell-mask {} */
 .handbooke-mainpage .mint-cell-mask::after {
   background-color:#000;
   content:" ";

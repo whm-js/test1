@@ -1,9 +1,7 @@
 <template>
   <div>
-    <mt-header fixed title="个人小结" style="background-color:#37acd3">
-      <router-link to="/" slot="left">
-        <mt-button icon="back"></mt-button>
-      </router-link>
+    <mt-header fixed title="个人小结" style="background-color:#37acd3;font-size:16px;">
+      <mt-button icon="back" slot="left" @click.native="backClick"></mt-button>
       <mt-button slot="right"><span style="font-weight:bold;">3</span>/3</mt-button>
     </mt-header>
     <div style="height:50px;"></div>
@@ -12,17 +10,19 @@
       <div>
         <div class="summary-panel">
           <h4 class="summary-title">个人小结：</h4>
-          <div class="summary-text">
+          <div class="summary-text" v-if="this.$store.state.UserExitData.PersonalSummary">
             {{this.$store.state.UserExitData.PersonalSummary}}
           </div>
+          <div class="summary-text" v-else>-</div>
         </div>
 
         <br/>
         <div class="summary-panel">
           <h4 class="summary-title">带教老师评语：</h4>
-          <div class="summary-text">
+          <div class="summary-text" v-if="this.$store.state.UserExitData.TeacherComment">
             {{this.$store.state.UserExitData.TeacherComment}}
           </div>
+          <div class="summary-text" v-else>-</div>
         </div>
       </div>
       <div style="height:100px;"></div>
@@ -46,8 +46,9 @@
         },
         methods: {
           nextStep:function(){
+            var path = this.$route.query.checkExitType ? '/teacher_index':'/index/rotate_department/';
             this.$router.push({
-              path:'/',
+              path:path,
               name:'',
               query:{
                 planDataIndex:this.$route.query.planDataIndex
@@ -65,6 +66,18 @@
                 departmentId:this.$route.query.departmentId,
                 teacherId:this.$route.query.teacherId,
                 teacherName:this.$route.query.teacherName,
+                planDataIndex:this.$route.query.planDataIndex, //页面跳转首页索引参数
+                checkExitType:this.$route.query.checkExitType //查看出科情况类型：teacher为教师查看，为空则是学生查看
+              }
+            });
+          },
+          //页面头部返回事件控制
+          backClick:function(){
+            var path = this.$route.query.checkExitType ? '/teacher_index':'/index/rotate_department/';
+            this.$router.push({
+              path:path,
+              name:'',
+              query:{
                 planDataIndex:this.$route.query.planDataIndex
               }
             });

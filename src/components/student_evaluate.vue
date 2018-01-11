@@ -1,6 +1,6 @@
 <template>
   <div>
-    <mt-header fixed title="评价带教老师" style="background:#37acd3;">
+    <mt-header fixed title="评价带教老师" style="background:#37acd3;font-size:16px;">
       <router-link to="/student_attendance"  slot="left">
         <mt-button icon="back"  v-on:click="saveRateInfo"></mt-button>
       </router-link>

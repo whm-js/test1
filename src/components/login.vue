@@ -68,14 +68,22 @@
                 //登录成功只有学员账号才能登陆
                 if(data.data.role == "学员"){
                   self.setGuid(data.data.guid)
+                  self.setLocalStorageValue('userinfo',data.data);
                   self.$store.commit('updataguid',data.data.guid);
                   self.$router.push('/index/rotate_department/');
                 }else{
                   //提示未开发
+                  if (location.hostname == 'newtest.ksbao.com' || location.hostname == 'localhost') {
+                  self.setGuid(data.data.guid)
+                  self.setLocalStorageValue('userinfo',data.data);
+                  self.$store.commit('updataguid',data.data.guid);
+                  self.$router.push('/teacher_index');
+                  }else{
                   self.$messagebox({
                     title: '提示',
                     message:'正在开发中，敬请期待...',
                   });
+                  }
                 }
                 break
               case 1:

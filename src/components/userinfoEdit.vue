@@ -14,12 +14,6 @@
         <div id="editInfo">
             <mt-field label="姓名" type="text" placeholder="请输入姓名" v-model="userinfoData.RealName"></mt-field>
             <mt-field label="性别" readonly="readonly" placeholder="" >
-                <!--label for="1">
-                    <input type="radio" id="nan" value="1" v-model="userinfoData.Sex" />
-                男</label>
-                <label for="0">
-                    <input type="radio" id="nv" value="0" v-model="userinfoData.Sex" style="margin-left:15px;" />
-                女</label-->
                 <label style="margin-left:10px;">
                     <input type="radio" :checked="isFullAttend===1" name="attend-radio"
                            value="1" v-on:change="attendChange($event)"/>
@@ -34,24 +28,42 @@
             <div @click="open('datePicker')">
                 <mt-field label="出生日期" readonly="readonly" disableClear placeholder="请输入出生日期" v-model="userinfoData.Birthday"></mt-field>
             </div>
-            <mt-field class="stringB" label="最高学历毕业学校" type="text" placeholder="请输入最高学历毕业学校" v-model="userinfoData.GraduatedSchool"></mt-field>
-            <div @click="showNation(3)">
-                <mt-field label="学历类型"  readonly="readonly" disableClear placeholder="请输入学历" v-model="userinfoData.EducationType"></mt-field>
+            <div v-if="role=='学员'">
+                <mt-field class="stringB" label="最高学历毕业学校" type="text" placeholder="请输入最高学历毕业学校" v-model="userinfoData.GraduatedSchool"></mt-field>
+                <div @click="showNation(3)">
+                    <mt-field label="学历类型"  readonly="readonly" disableClear placeholder="请输入学历" v-model="userinfoData.EducationType"></mt-field>
+                </div>
+                <mt-field label="执业证编号" type="number" :attr="{ maxlength: 27 }" placeholder="请输入执业证编号" v-model="userinfoData.PracticeCode"></mt-field>
+                <mt-field class="stringB" label="工作单位" type="text" placeholder="请输入工作单位" v-model="userinfoData.WorkPlace"></mt-field>
+                <mt-field label="毕业专业" type="text" placeholder="请输入毕业专业" v-model="userinfoData.Profession"></mt-field>
+                <div @click="showNation(4)">
+                    <mt-field label="毕业年份" type="number" disableClear readonly="readonly" placeholder="请输入毕业年份" v-model="userinfoData.GraduatedYear"></mt-field>
+                </div>
+                <div @click="showNation(1)">
+                    <mt-field label="民族" readonly="readonly" disableClear placeholder="请输入民族" v-model="userinfoData.Nation"></mt-field>
+                </div>
+                <div @click="showNation(2)">
+                    <mt-field label="政治面貌" readonly="readonly" disableClear placeholder="请输入政治面貌" v-model="userinfoData.PoliticalStatus"></mt-field>
+                </div>
+                <mt-field label="邮箱" placeholder="请输入邮箱" type="email" v-model="userinfoData.Email"></mt-field>
             </div>
-            <mt-field label="执业证编号" type="number" :attr="{ maxlength: 27 }" placeholder="请输入执业证编号" v-model="userinfoData.PracticeCode"></mt-field>
-            <mt-field class="stringB" label="工作单位" type="text" placeholder="请输入工作单位" v-model="userinfoData.WorkPlace"></mt-field>
-            <mt-field label="毕业专业" type="text" placeholder="请输入毕业专业" v-model="userinfoData.Profession"></mt-field>
-            <div @click="showNation(4)">
-                <mt-field label="毕业年份" type="number" disableClear readonly="readonly" placeholder="请输入毕业年份" v-model="userinfoData.GraduatedYear"></mt-field>
+            <div v-else>
+                <div @click="open('datePicker')">
+                    <mt-field label="取得职称时间"  readonly="readonly" disableClear placeholder="请输入取得职称时间" v-model="userinfoData.TitleDate"></mt-field>
+                </div>
+                <div @click="open('datePicker')">
+                    <mt-field label="参加工作时间"  readonly="readonly" disableClear placeholder="请输入参加工作时间" v-model="userinfoData.JobDate"></mt-field>
+                </div>
+                <mt-field label="最高学历" type="number" :attr="{ maxlength: 27 }" placeholder="请输入最高学历" v-model="userinfoData.HighestEducation"></mt-field>
+                <mt-field label="学位" type="text" placeholder="请输入学位" v-model="userinfoData.Degree"></mt-field>
+                <mt-field class="stringB" label="最高学历毕业学校" type="text" placeholder="请输入最高学历毕业学校" v-model="userinfoData.GraduatedSchool"></mt-field>
+                <div @click="showNation(4)">
+                    <mt-field label="毕业年份" type="number" disableClear readonly="readonly" placeholder="请输入毕业年份" v-model="userinfoData.GraduatedYear"></mt-field>
+                </div>
+                <div @click="open('datePicker')">
+                    <mt-field label="从事本专业时间"  readonly="readonly" disableClear placeholder="请输入从事本专业时间" v-model="userinfoData.Occupied"></mt-field>
+                </div>
             </div>
-            <div @click="showNation(1)">
-                <mt-field label="民族" readonly="readonly" disableClear placeholder="请输入民族" v-model="userinfoData.Nation"></mt-field>
-            </div>
-            <div @click="showNation(2)">
-                <mt-field label="政治面貌" readonly="readonly" disableClear placeholder="请输入政治面貌" v-model="userinfoData.PoliticalStatus"></mt-field>
-            </div>
-            <mt-field label="邮箱" placeholder="请输入邮箱" type="email" v-model="userinfoData.Email"></mt-field>
-
             <mt-popup v-model="popupVisible" position="bottom" style="width:100%;"> 
                 <div class="picker-toolbar">  
                     <span class="mint-datetime-action mint-datetime-cancel" @click="cancelHide">取消</span>  
@@ -82,12 +94,17 @@ export default {
             document.body.scrollTop=0;
             document.documentElement.scrollTop=0;
             this.guid=this.getGuid();
-            //刷新／激活数据写在此处,每次打开页面请求最新的数据
-            this.getUserInfo();
+            this.role=this.getLocalStorageValue('userinfo').role;//获取用户角色
+            if(this.guid!==this.getGuid()||this.userinfoData===''){
+                //刷新／激活数据写在此处,每次打开页面请求最新的数据
+                this.getUserInfo();
+            }
+            
         },
         data(){ 
             return{
               guid:this.getGuid(),
+              role:'',
               userinfoData : {
                   RealName:'',
                   Sex:'',
@@ -269,14 +286,15 @@ export default {
                     this.nationJson[0].values=['科学型博士','专业型博士','科学型硕士','专业型硕士','本科'];
                     this.poputype=3;
                 }else if(value==4){
-                    //毕业年份范围：2017-1980年
-                    var n=new Date().getFullYear();
+                    // 毕业年份范围：2017-1980年
+                    this.startDate='1980';
+                    this.endDate=new Date.getFullYear();
+                    var now=new Date();
+                    var n=now.getFullYear();
                     for (var i = 0; i < 38; i++) {
                         this.nationJson[0].values.push(n);
                         n -= 1;
                     }
-
-                    //this.nationJson[0].values=['2017','2016','2015','2014','2013'];
                     this.poputype=4;
                 }else{
                     this.nationJson[0].values=['汉族','蒙古族','回族','藏族','维吾尔族','苗族','彝族','壮族','布依族','朝鲜族','满族','侗族','瑶族','白族','土家族',  

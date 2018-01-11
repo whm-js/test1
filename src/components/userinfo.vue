@@ -6,7 +6,7 @@
       <img src="../assets/userHeader.png" width="100px" style="margin: 0 auto;padding-top:10px;" />
       <p style="font-size:16px;">{{userinfoData.RealName}}({{userinfoData.UserName}})</p>
     </div>
-    <div style="margin:auto 8px;">
+    <div style="margin:auto 8px;" v-if="role=='学员'">
       <mt-cell title="学员类型">{{userinfoData.Education}}</mt-cell>
       <mt-cell title="培训学科">{{userinfoData.CourseName}}</mt-cell>
       <mt-cell title="培训年限">{{userinfoData.TrainingYears===1?'一年制':userinfoData.TrainingYears===2?'二年制':userinfoData.TrainingYears===3?'三年制':''}}</mt-cell>
@@ -14,6 +14,15 @@
       <mt-cell title="是否具有处方权">{{userinfoData.IsPrescriptionRight?'有':'无'}}</mt-cell>
       <mt-cell title="是否执业医师"  style="background-image: none;">{{userinfoData.IsPracticingPhysician?'是':'否'}}</mt-cell>
     </div>
+    <div style="margin:auto 8px;" v-else>
+      <mt-cell title="角色">{{userinfoData.UserRole}}</mt-cell>
+      <mt-cell title="所在科室">{{userinfoData.DepartmentName}}</mt-cell>
+      <mt-cell title="是否取得师资证书">{{userinfoData.isTeacherLCE?'是':'否'}}</mt-cell>
+      <mt-cell title="是否为我院全科专业带教老师">{{userinfoData.isGeneralTeacher?'是':'否'}}</mt-cell>
+      <mt-cell title="是否取得全科师资证书">{{userinfoData.ishasGeneralLCE?'是':'否'}}</mt-cell>
+      <mt-cell title="专业技术职称"  style="background-image: none;">{{userinfoData.TitleName}}</mt-cell>
+    </div>
+
   </div>
   <div class="listtype">
     <mt-cell title="个人资料" to="/userinfoEdit" is-link value="">
@@ -50,17 +59,23 @@
       },
       activated(){
         this.$store.commit('updataindexSelected','userinfo');
+        this.$store.commit('updatateacher_indexSelected','teacher_userinfo');
         //避免因为滑动，页面不显示在最顶部
           document.body.scrollTop=0;
           document.documentElement.scrollTop=0;
           this.guid=this.getGuid();
-          //刷新／激活数据写在此处,每次打开页面请求最新的数据
-          this.getUserInfo();
+          this.role=this.getLocalStorageValue('userinfo').role;//获取用户角色
+          if(this.guid!==this.getGuid()||this.userinfoData===''){
+            //刷新／激活数据写在此处,每次打开页面请求最新的数据
+            this.getUserInfo();
+          }
       },
       data(){
         return {
-          guid:this.getGuid(),
-          userinfoData:{},
+          guid:'',
+          loginUserinfo:'',
+          role:'',
+          userinfoData:'',
         }
       },
       computed:{

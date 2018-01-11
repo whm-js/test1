@@ -1,6 +1,6 @@
 <template>
   <div>
-    <mt-header fixed title="考勤录入" style="background:#37acd3;">
+    <mt-header fixed title="考勤录入" style="background:#37acd3;font-size:16px;">
       <router-link to="/"  slot="left">
         <mt-button icon="back" v-on:click="saveAttendInfo"></mt-button>
       </router-link>

@@ -1,9 +1,7 @@
 <template>
   <div>
-    <mt-header fixed title="考核成绩" style="background-color:#37acd3">
-      <router-link to="/" slot="left">
-        <mt-button icon="back"></mt-button>
-      </router-link>
+    <mt-header fixed title="考核成绩" style="background-color:#37acd3;font-size:16px;">
+      <mt-button icon="back" slot="left" @click.native="backClick"></mt-button>
       <mt-button slot="right"><span style="font-weight:bold;">1</span>/3</mt-button>
     </mt-header>
     <div style="height:50px;"></div>
@@ -14,22 +12,19 @@
         <tbody>
           <tr>
             <td>考核结果</td>
-            <td style="width:98px;" v-if="UserExitData.AppraiseResult==-1">
-            </td>
-            <td style="width:98px;color:#5cb85c;" v-else-if="UserExitData.AppraiseResult==1">
-                通过
-            </td>
-            <td style="width:98px;color:red;" v-else-if="UserExitData.AppraiseResult==0">
-                不通过
-            </td>
+            <td style="width:98px;" v-if="UserExitData.AppraiseResult==undefined">-</td>
+            <td style="width:98px;color:#5cb85c;" v-else-if="UserExitData.AppraiseResult==1">通过</td>
+            <td style="width:98px;color:red;" v-else-if="UserExitData.AppraiseResult==0">不通过</td>
           </tr>
           <tr>
             <td>理论考试成绩</td>
-            <td>{{UserExitData.TheoryScore}}</td>
+            <td v-if="UserExitData.TheoryScore==undefined">-</td>
+            <td v-else>{{UserExitData.TheoryScore}}</td>
           </tr>
           <tr>
             <td>技能考试成绩</td>
-            <td>{{UserExitData.SkillScore}}</td>
+            <td v-if="UserExitData.SkillScore==undefined">-</td>
+            <td v-else>{{UserExitData.SkillScore}}</td>
           </tr>
         </tbody>
       </table>
@@ -40,27 +35,33 @@
         <tbody>
           <tr>
             <td>是否全勤</td>
-            <td style="width:98px;">{{UserExitData.IsFullAttendance}}</td>
+            <td style="width:98px;" v-if="UserExitData.IsFullAttendance==undefined">-</td>
+            <td style="width:98px;" v-else>{{UserExitData.IsFullAttendance}}</td>
           </tr>
           <tr>
             <td>事假（次）</td>
-            <td>{{UserExitData.PersonalLeave}}</td>
+            <td v-if="UserExitData.PersonalLeave==undefined">-</td>
+            <td v-else>{{UserExitData.PersonalLeave}}</td>
           </tr>
           <tr>
             <td>病假（次）</td>
-            <td>{{UserExitData.SickLeave}}</td>
+            <td v-if="UserExitData.SickLeave==undefined">-</td>
+            <td v-else>{{UserExitData.SickLeave}}</td>
           </tr>
           <tr>
             <td>公休假（次）</td>
-            <td>{{UserExitData.SabbaticalLeave}}</td>
+            <td v-if="UserExitData.SabbaticalLeave==undefined">-</td>
+            <td v-else>{{UserExitData.SabbaticalLeave}}</td>
           </tr>
           <tr>
             <td>迟到（次）</td>
-            <td>{{UserExitData.Late}}</td>
+            <td v-if="UserExitData.Late==undefined">-</td>
+            <td v-else>{{UserExitData.Late}}</td>
           </tr>
           <tr>
             <td>旷工（次）</td>
-            <td>{{UserExitData.Absenteeism}}</td>
+            <td v-if="UserExitData.Absenteeism==undefined">-</td>
+            <td v-else>{{UserExitData.Absenteeism}}</td>
           </tr>
         </tbody>
       </table>
@@ -196,8 +197,10 @@
               createYear:year
             };
             this.$httpPost('exit/getExitCourseInfoByID', params, function (err, json) {
-              that.UserExitData= json.data.data[0];
-              that.$store.commit('updataUserExitData',json.data.data[0]);
+              if (json.data.data.length>=1) {
+                that.UserExitData= json.data.data[0];
+              }
+              that.$store.commit('updataUserExitData',that.UserExitData);//缓存学员出科数据，在出科详情的第三个页面用到：展示个人小结和带教老师评语
             });
           },
           //进入下一个页面
@@ -211,6 +214,18 @@
                 departmentId:this.$route.query.departmentId,
                 teacherId:this.$route.query.teacherId,
                 teacherName:this.$route.query.teacherName,
+                planDataIndex:this.$route.query.planDataIndex, //页面跳转首页索引参数
+                checkExitType:this.$route.query.checkExitType //查看出科情况类型：teacher为教师查看，为空则是学生查看
+              }
+            });
+          },
+          //页面头部返回事件控制
+          backClick:function(){
+            var path = this.$route.query.checkExitType ? '/teacher_index':'/index/rotate_department/';
+            this.$router.push({
+              path:path,
+              name:'',
+              query:{
                 planDataIndex:this.$route.query.planDataIndex
               }
             });

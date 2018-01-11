@@ -14,12 +14,14 @@
     <mt-cell title="公司介绍" value="400-727-8900"></mt-cell>
 
     <div style="bottom:40px;position:fixed;font-size:14px;color:#C4C4C4;text-align: center;width:99%;">
-      <p>
-        广西英腾教育科技股份有限公司
-      </p>
-      <p>
-        Copyright © 2015-2017 Yingsoft.All Rights Reserved
-      </p>
+      <span>
+        英腾教育科技股份有限公司
+      </span>
+      <br/>
+      <br/>
+      <span>
+        Copyright © 2015-<span>{{dateYears}}</span> Yingedu.All Rights Reserved
+      </span>
     </div>
   </div>
 </div>
@@ -32,11 +34,18 @@
         store,
         components: {},
         created(){
+            var years= new Date().getFullYear();
+            this.dateYears=years;
         },
         activated(){
           //避免因为滑动，页面不显示在最顶部
             document.body.scrollTop=0;
             document.documentElement.scrollTop=0;
+        },
+        data(){
+          return{
+            dateYears:'2018'
+          }
         }
     }
 </script>

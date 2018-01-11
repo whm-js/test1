@@ -1,9 +1,7 @@
 <template>
   <div style="overflow-x: hidden;">
-    <mt-header fixed title="评价带教老师" style="background-color:#37acd3">
-      <router-link to="/" slot="left">
-        <mt-button icon="back"></mt-button>
-      </router-link>
+    <mt-header fixed :title="HtmlTitle" style="background-color:#37acd3;font-size:16px;">
+      <mt-button icon="back" slot="left" @click.native="backClick"></mt-button>
       <mt-button slot="right"><span style="font-weight:bold;">2</span>/3</mt-button>
     </mt-header>
     <div style="height:50px;"></div>
@@ -17,7 +15,7 @@
       </div>
       <!--如果库中存在评价json-->
       <template v-if="SuggestionData.Content"> 
-        <div v-for="item in JSON.parse(SuggestionData.Content).TeachingItems">
+        <div v-for="item in TeachingJsons">
           <div class="evaluate-panel">
             <h4 class="evaluate-title">{{item.ItemName}}（{{item.ItemScore}}分）</h4>
             <ul style="width:100%;">
@@ -32,13 +30,14 @@
 
       <!--否则获取本地评价json-->
       <template v-else>
-        <div v-for="item in TeachingJson.TeachingItems">
+        <div v-for="item in TeachingJsons">
           <div class="evaluate-panel">
             <h4 class="evaluate-title">{{item.ItemName}}（{{item.ItemScore}}分）</h4>
             <ul style="width:100%;">
               <li class="evaluate-item" v-for="data in item.ItemOptions">
                 <div class="evaluate-item-left">{{data.OptionName}}</div>
-                <div class="evaluate-item-right">{{data.SelectedGrade}}分</div>
+                <div class="evaluate-item-right" v-if="data.SelectedGrade != -1">{{data.SelectedGrade}}分</div>
+                <div class="evaluate-item-right" v-else></div>
               </li>
             </ul>
           </div>
@@ -69,6 +68,7 @@
 </template>
 <script>
     import {Teachingdata} from '../assets/js/teachingJson.js'
+    import {Evaluationdata} from '../assets/js/evaluationJson.js'
 
     export default {
         name: '',
@@ -80,7 +80,8 @@
         data(){ 
             return{
               SuggestionData : {},
-              TeachingJson : Teachingdata
+              HtmlTitle : this.$route.query.checkExitType ? '评价学员':'评价带教老师',
+              TeachingJsons : this.$route.query.checkExitType ? Evaluationdata.EvaluationItems:Teachingdata.TeachingItems
             }
         },
         methods: {
@@ -128,11 +129,13 @@
               });
               return;
             }
+            //查看出科情况类型：teacher为教师查看，为空则是学生查看
+            var appraisalType = this.$route.query.checkExitType ? 1:0;
 
             var params = {
               guid:guid,
               PlanStartDate:planStartDate,
-              AppraisalType:0,
+              AppraisalType:appraisalType,
               UserId:userId,
               DepartmentId:departmentId,
               TeacherId:teacherId,
@@ -141,6 +144,7 @@
             var that = this;
             that.$httpPost('rotate/getSuggestion', params, function (err, json) {
               that.SuggestionData= json.data.data[0];
+              that.TeachingJsons = that.$route.query.checkExitType ? JSON.parse(that.SuggestionData.Content).EvaluationItems:JSON.parse(that.SuggestionData.Content).TeachingItems;
             });
           },
           //返回上一个页面
@@ -154,7 +158,8 @@
                 departmentId:this.$route.query.departmentId,
                 teacherId:this.$route.query.teacherId,
                 teacherName:this.$route.query.teacherName,
-                planDataIndex:this.$route.query.planDataIndex
+                planDataIndex:this.$route.query.planDataIndex, //页面跳转首页索引参数
+                checkExitType:this.$route.query.checkExitType
               }
             });
           },
@@ -169,6 +174,18 @@
                 departmentId:this.$route.query.departmentId,
                 teacherId:this.$route.query.teacherId,
                 teacherName:this.$route.query.teacherName,
+                planDataIndex:this.$route.query.planDataIndex, //页面跳转首页索引参数
+                checkExitType:this.$route.query.checkExitType //查看出科情况类型：teacher为教师查看，为空则是学生查看
+              }
+            });
+          },
+          //页面头部返回事件控制
+          backClick:function(){
+            var path = this.$route.query.checkExitType ? '/teacher_index':'/index/rotate_department/';
+            this.$router.push({
+              path:path,
+              name:'',
+              query:{
                 planDataIndex:this.$route.query.planDataIndex
               }
             });

@@ -8,6 +8,7 @@ Vue.use(Vuex);
 const state = {
   count:1,
   indexSelected:'',
+  teacher_indexSelected:'',
   isSelect:-1,
   reloadMainpage:'',
   UserID:'007',
@@ -29,6 +30,9 @@ const mutations={
   },
   updataindexSelected(state,indexSelected){
     state.indexSelected=indexSelected;
+  },
+  updatateacher_indexSelected(state,indexSelected){
+    state.teacher_indexSelected=indexSelected;
   },
   updatareloadMainpage(state,reloadMainpage){
     state.reloadMainpage=reloadMainpage;
@@ -68,6 +72,9 @@ const getters = {
   },
   indexSelected:function (state) {
     return state.indexSelected;
+  },
+  teacher_indexSelected:function (state) {
+    return state.teacher_indexSelected;
   },
   reloadMainpage:function (state) {
     return state.reloadMainpage;

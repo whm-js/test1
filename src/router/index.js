@@ -1,7 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import index from '@/components/index'
+import teacher_index from '@/components/teacher_index'
 import userinfo from '@/components/userinfo' //个人中心
+import teacher_userinfo from '@/components/userinfo' //个人中心
+import teacher_exit from '@/components/teacher_exit' 
+import teacher_details from '@/components/teacher_details' 
 import login from '@/components/login'
 
 import student_attendance from '@/components/student_attendance'  //学员考勤录入
@@ -43,6 +47,23 @@ export default new Router({
         path: '/index/rotate_plan/',
         name: 'rotate_plan',
         component: rotate_plan
+      }]
+    },{
+      path: '/teacher_index',
+      name: 'teacher_index',
+      component: teacher_index,
+      children:[{
+        path:'/teacher_index/teacher_exit/',
+        name:'teacher_exit',
+        component:teacher_exit
+      },{
+        path: '/teacher_index/userinfo/',
+        name: 'teacher_userinfo',
+        component: teacher_userinfo
+      },{
+        path: '/teacher_index/teacher_details/',
+        name: 'teacher_details',
+        component: teacher_details
       }]
     },{
       path: '/login',
