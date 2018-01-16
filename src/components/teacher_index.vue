@@ -52,12 +52,6 @@
           }
         },
         created(){
-//          this.$messagebox({
-//            title: '提示',
-//            message: '确定执行此操作?',
-//            showCancelButton: true
-//          });
-//          console.log(this.$store.state.guid);
           if(!this.guid){
             this.$router.push('/login')
             return;
@@ -71,7 +65,7 @@
             this.selected = 'teacher_details';
             this.selectedName = '带教详情'
           }else
-          if(path.indexOf('teacher_userinfo')>-1){
+          if(path.indexOf('/userinfo')>-1){
             this.selected = 'teacher_userinfo';
             this.selectedName = '个人中心'
           }else{
@@ -89,18 +83,13 @@
             this.selected = 'teacher_details';
             this.selectedName = '带教详情'
           }else
-          if(path.indexOf('teacher_userinfo')>-1){
+          if(path.indexOf('/userinfo')>-1){
             this.selected = 'teacher_userinfo';
             this.selectedName = '个人中心'
           }else{
             this.selected = 'teacher_exit';
             this.selectedName = '出科管理'
           }
-          // this.$router.push({
-          //   path:this.selected,
-          //   name:this.selected,
-          //   query:{id:123}
-          // });
         },
         methods: {
         aaa() {
@@ -129,12 +118,8 @@
             name:newselected,
             query:{id:321}
           });
-          // this.$store.commit('updataisSelect',-1);
         },
         listenindexSelected:function(newData){
-          // if(this.$store.state.isSelect!==-1){
-          //   return
-          // }
           if(newData!==this.selected){
             switch (newData){
               case 'teacher_exit':

@@ -181,12 +181,13 @@
           },
           //页面头部返回事件控制
           backClick:function(){
-            var path = this.$route.query.checkExitType ? '/teacher_index':'/index/rotate_department/';
+            var path = this.$route.query.checkExitType ? '/teacher_index/teacher_exit/':'/index/rotate_department/';
             this.$router.push({
               path:path,
               name:'',
               query:{
-                planDataIndex:this.$route.query.planDataIndex
+                planDataIndex:this.$route.query.planDataIndex,
+                checkExitType:this.$route.query.checkExitType  //查看出科情况类型：teacher为教师查看，为空则是学生查看
               }
             });
           }

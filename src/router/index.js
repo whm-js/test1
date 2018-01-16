@@ -26,6 +26,12 @@ import customer_service from '@/components/customer_service' //客服中心
 
 import updatePWD from '@/components/updatePWD' //修改密码
 
+/*
+*教师端出科：填写评语、评价学员
+*/
+import teacher_attendance from '@/components/teacher_attendance'  //学员考勤录入
+import teacher_evaluate from '@/components/teacher_evaluate'  //评价学员
+import teacher_summary from '@/components/teacher_summary'  //出科评语
 
 Vue.use(Router)
 
@@ -121,6 +127,18 @@ export default new Router({
       path: '/student_summary',
       name: 'student_summary',
       component: student_summary
+    },{
+      path: '/teacher_attendance',
+      name: 'teacher_attendance',
+      component: teacher_attendance
+    },{
+      path: '/teacher_evaluate',
+      name: 'teacher_evaluate',
+      component: teacher_evaluate
+    },{
+      path: '/teacher_summary',
+      name: 'teacher_summary',
+      component: teacher_summary
     }
 
   ]

@@ -1,9 +1,7 @@
 <template>
     <div style="width:98%;margin:0 auto;border-radius:6px">
         <mt-header fixed title="个人资料" style="background-color:#37acd3;font-size:16px;">
-            <router-link to="/index/userinfo" slot="left">
-                <mt-button icon="back"></mt-button>
-            </router-link>
+            <mt-button icon="back" slot="left" @click="back"></mt-button>
             <mt-button icon="" slot="right" @click="editValidator">保存</mt-button>
         </mt-header>
 
@@ -25,7 +23,7 @@
             </mt-field>
             <mt-field label="手机号码" type="tel" :attr="{ maxlength: 11 }" placeholder="请输入手机号码" v-model="userinfoData.Telephone"></mt-field>
             <mt-field label="身份证号" type="text" :attr="{ maxlength: 18 }" placeholder="请输入身份证号" v-model="userinfoData.IdentityNo"></mt-field>
-            <div @click="open('datePicker')">
+            <div @click="open('datePicker','birthday')">
                 <mt-field label="出生日期" readonly="readonly" disableClear placeholder="请输入出生日期" v-model="userinfoData.Birthday"></mt-field>
             </div>
             <div v-if="role=='学员'">
@@ -48,19 +46,19 @@
                 <mt-field label="邮箱" placeholder="请输入邮箱" type="email" v-model="userinfoData.Email"></mt-field>
             </div>
             <div v-else>
-                <div @click="open('datePicker')">
+                <div @click="open('datePicker','titledate')">
                     <mt-field label="取得职称时间"  readonly="readonly" disableClear placeholder="请输入取得职称时间" v-model="userinfoData.TitleDate"></mt-field>
                 </div>
-                <div @click="open('datePicker')">
+                <div @click="open('datePicker','jobdate')">
                     <mt-field label="参加工作时间"  readonly="readonly" disableClear placeholder="请输入参加工作时间" v-model="userinfoData.JobDate"></mt-field>
                 </div>
-                <mt-field label="最高学历" type="number" :attr="{ maxlength: 27 }" placeholder="请输入最高学历" v-model="userinfoData.HighestEducation"></mt-field>
+                <mt-field label="最高学历" type="text" :attr="{ maxlength: 27 }" placeholder="请输入最高学历" v-model="userinfoData.HighestEducation"></mt-field>
                 <mt-field label="学位" type="text" placeholder="请输入学位" v-model="userinfoData.Degree"></mt-field>
                 <mt-field class="stringB" label="最高学历毕业学校" type="text" placeholder="请输入最高学历毕业学校" v-model="userinfoData.GraduatedSchool"></mt-field>
                 <div @click="showNation(4)">
                     <mt-field label="毕业年份" type="number" disableClear readonly="readonly" placeholder="请输入毕业年份" v-model="userinfoData.GraduatedYear"></mt-field>
                 </div>
-                <div @click="open('datePicker')">
+                <div @click="open('datePicker','occupied')">
                     <mt-field label="从事本专业时间"  readonly="readonly" disableClear placeholder="请输入从事本专业时间" v-model="userinfoData.Occupied"></mt-field>
                 </div>
             </div>
@@ -73,9 +71,9 @@
             </mt-popup>
             <mt-datetime-picker  
               ref="datePicker"  
-              type="date"  
+              type="date"   
               :startDate="startDate"  
-              :endDate="endDate"  
+              :endDate="endDate"
               v-model="dateValue"  
               @confirm="handleChange">  
             </mt-datetime-picker>
@@ -83,7 +81,6 @@
     </div>
 </template>
 <script>
-import {formatDate} from '../assets/js/date.js'
 export default {
         name: '',
         components: {},
@@ -95,10 +92,8 @@ export default {
             document.documentElement.scrollTop=0;
             this.guid=this.getGuid();
             this.role=this.getLocalStorageValue('userinfo').role;//获取用户角色
-            if(this.guid!==this.getGuid()||this.userinfoData===''){
-                //刷新／激活数据写在此处,每次打开页面请求最新的数据
-                this.getUserInfo();
-            }
+            //刷新／激活数据写在此处,每次打开页面请求最新的数据
+            this.getUserInfo();
             
         },
         data(){ 
@@ -135,10 +130,11 @@ export default {
                     textAlign: 'center'
                     }
                 ],
-              dateValue: new Date(),  
-              startDate: new Date('1900-01-01'),  
-              endDate: new Date(),
+              endDate:new Date(),
+              dateValue: new Date(),
+              startDate: new Date('1900-01-01'),
               isFullAttend:1,
+              pickerchangeValue:1,
             }
         },
         methods: {
@@ -147,6 +143,13 @@ export default {
                 var value=event.currentTarget.value;
                 value=Number(value);
                 this.isFullAttend=value;
+            },
+            back(){
+                var path = this.role === '学员' ? '/index/userinfo/':'/teacher_index/userinfo/';
+                this.$router.push({
+                    path:path,
+                    name:'',
+                });
             },
             getUserInfo(){
                 var that=this;
@@ -234,23 +237,42 @@ export default {
             },
             edit(){
                 var that=this;
-                var parems={
-                    realname:this.userinfoData.RealName,//姓名
-                    sex:this.isFullAttend,//性别
-                    telphone:this.userinfoData.Telephone,//手机
-                    identityNo:this.userinfoData.IdentityNo,//身份证号
-                    graduatedschool:this.userinfoData.GraduatedSchool,//最高学历毕业学校
-                    educationtype:this.userinfoData.EducationType,//学历类型
-                    practicecode:this.userinfoData.PracticeCode,//执业证编号
-                    Email:this.userinfoData.Email,//邮箱
-                    politicalstatus:this.userinfoData.PoliticalStatus,//政治面貌
-                    workplace:this.userinfoData.WorkPlace,//工作单位
-                    profession:this.userinfoData.Profession,//毕业专业
-                    graduatedyear:this.userinfoData.GraduatedYear,//毕业年份
-                    birthday:this.userinfoData.Birthday,//出生日期
-                    nation:this.userinfoData.Nation,//民族
-                    guid:this.guid
-                };
+                var parems={};
+                if(this.role=='学员'){
+                    parems={
+                        realname:this.userinfoData.RealName,//姓名
+                        sex:this.isFullAttend,//性别
+                        telphone:this.userinfoData.Telephone,//手机
+                        identityNo:this.userinfoData.IdentityNo,//身份证号
+                        graduatedschool:this.userinfoData.GraduatedSchool,//最高学历毕业学校
+                        educationtype:this.userinfoData.EducationType,//学历类型
+                        practicecode:this.userinfoData.PracticeCode,//执业证编号
+                        Email:this.userinfoData.Email,//邮箱
+                        politicalstatus:this.userinfoData.PoliticalStatus,//政治面貌
+                        workplace:this.userinfoData.WorkPlace,//工作单位
+                        profession:this.userinfoData.Profession,//毕业专业
+                        graduatedyear:this.userinfoData.GraduatedYear,//毕业年份
+                        birthday:this.userinfoData.Birthday,//出生日期
+                        nation:this.userinfoData.Nation,//民族
+                        guid:this.guid
+                    };
+                }else if(this.role=='带教老师'){
+                    parems={
+                        realname:this.userinfoData.RealName,//姓名
+                        sex:this.isFullAttend,//性别
+                        telphone:this.userinfoData.Telephone,//手机
+                        identityNo:this.userinfoData.IdentityNo,//身份证号
+                        birthday:this.userinfoData.Birthday,//出生日期
+                        titledate:this.userinfoData.TitleDate,//取得职称时间
+                        jobdate:this.userinfoData.JobDate,//参加工作时间
+                        highesteducation:this.userinfoData.HighestEducation,//最高学历
+                        degree:this.userinfoData.Degree,//学位
+                        graduatedschool:this.userinfoData.GraduatedSchool,//最高学历毕业学校
+                        graduatedyear:this.userinfoData.GraduatedYear,//毕业年份
+                        occupied:this.userinfoData.Occupied,//政治面貌
+                        guid:this.guid
+                    };
+                }
                 this.$httpPost('info/updateUserInfo', parems, function (err, json) {
                     if(json.status==200){
                         that.$Toast('修改成功');
@@ -287,8 +309,6 @@ export default {
                     this.poputype=3;
                 }else if(value==4){
                     // 毕业年份范围：2017-1980年
-                    this.startDate='1980';
-                    this.endDate=new Date.getFullYear();
                     var now=new Date();
                     var n=now.getFullYear();
                     for (var i = 0; i < 38; i++) {
@@ -311,10 +331,38 @@ export default {
                 this.popupVisible=false;
             },
             handleChange: function (value) {  
-                this.userinfoData.Birthday = formatDate(value,'yyyy-MM-dd');//window.moment(value).format('YYYY-MM-DD');
+                if(this.pickerchangeValue==1){
+                    this.userinfoData.Birthday = this.$formatDate(new Date(value),'yyyy-MM-dd');
+                }
+                if(this.pickerchangeValue==2){
+                    this.userinfoData.Birthday = this.$formatDate(new Date(value),'yyyy-MM-dd');
+                }
+                if(this.pickerchangeValue==3){
+                    this.userinfoData.Birthday = this.$formatDate(new Date(value),'yyyy-MM-dd');
+                }
+                if(this.pickerchangeValue==4){
+                    this.userinfoData.Birthday = this.$formatDate(new Date(value),'yyyy-MM-dd');
+                }
             },
-            open: function (picker) {  
-                this.dateValue = this.userinfoData.Birthday;
+            open: function (picker,index) {  
+                switch(index){
+                    case 'birthday':
+                    this.dateValue = new Date(this.userinfoData.Birthday);
+                    this.pickerchangeValue=1;
+                    break
+                    case 'titledate':
+                    this.dateValue = new Date(this.userinfoData.TitleDate);
+                    this.pickerchangeValue=2;
+                    break
+                    case 'jobdate':
+                    this.dateValue = new Date(this.userinfoData.JobDate);
+                    this.pickerchangeValue=3;
+                    break
+                    case 'occupied':
+                    this.dateValue = new Date(this.userinfoData.Occupied);
+                    this.pickerchangeValue=4;
+                    break
+                }
                 this.$refs[picker].open();  
             },
             //剔除掉html字符

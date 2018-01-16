@@ -178,7 +178,7 @@ var fromUrl='';
             return;
           }
           that.handBookData = json.data.data;
-          if(that.DemandNameindex1!=0&&fromUrl!='/index/rotate_department'&&this.role==='学员'){
+          if(that.DemandNameindex1!=0&&fromUrl!='/index/rotate_department'&&that.role==='学员'){
             for(var a in that.handBookData){
               that.$set(that.handBookData[a], 'Active', '');
             }
@@ -250,17 +250,6 @@ var fromUrl='';
               path:path,
               name:'',
             });
-          // if(role === '学员'){
-          //   this.$router.push({
-          //     path: 'handbook_mainpage',
-          //     name: 'handbook_mainpage'
-          //   });
-          // }else {
-          //   this.$router.push({
-          //     path: 'handbook_mainpage',
-          //     name: 'handbook_mainpage'
-          //   });
-          // }
         },
         FDate: function (date) {
           var d = new Date(date);
