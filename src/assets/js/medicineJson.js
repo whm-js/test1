@@ -7,7 +7,7 @@ var G_MedicalEthicsData = [
 				"FromType" : "radio",
 				"OptionID":1,
 				"OptionName" : "服务态度",
-				"OptionValue" : "-",
+				"OptionValue" : "",
 				"OptionGrade" : ["优秀", "良好", "一般", "差"],
 				"IsAdd" : false
 			}, {
@@ -15,7 +15,7 @@ var G_MedicalEthicsData = [
 				"OptionID":2,
 				"OptionName" : "患者投诉",
 				"OptionGrade" : ["无", "有"],
-				"OptionValue" : "-",
+				"OptionValue" : "",
 				"IsAdd" : true
 			}
 		]
@@ -27,7 +27,7 @@ var G_MedicalEthicsData = [
 				"FromType" : "radio",
 				"OptionID":1,
 				"OptionName" : "",
-				"OptionValue" : "-",
+				"OptionValue" : "",
 				"OptionGrade" : ["优秀", "良好", "一般", "差"],
 				"IsAdd" : false
 			}
@@ -40,7 +40,7 @@ var G_MedicalEthicsData = [
 				"FromType" : "radio",
 				"OptionID":1,
 				"OptionName" : "责任心",
-				"OptionValue" : "-",
+				"OptionValue" : "",
 				"OptionGrade" : ["优秀", "良好", "一般", "差"],
 				"IsAdd" : false
 			}, {
@@ -48,7 +48,7 @@ var G_MedicalEthicsData = [
 				"OptionID":2,
 				"OptionName" : "差错",
 				"OptionGrade" : ["无", "有"],
-				"OptionValue" : "-",
+				"OptionValue" : "",
 				"IsAdd" : true
 			}
 		]
@@ -60,7 +60,7 @@ var G_MedicalEthicsData = [
 				"FromType" : "radio",
 				"OptionID":1,
 				"OptionName" : "",
-				"OptionValue" : "-",
+				"OptionValue" : "",
 				"OptionGrade" : ["优秀", "良好", "一般", "差"],
 				"IsAdd" : false
 			}
@@ -73,14 +73,14 @@ var G_MedicalEthicsData = [
 				"FromType" : "radio",
 				"OptionID":1,
 				"OptionName" : "完成质量",
-				"OptionValue" : "-",
+				"OptionValue" : "",
 				"OptionGrade" : ["优秀", "良好", "一般", "差"],
 				"IsAdd" : false
 			}, {
 				"FromType" : "radio",
 				"OptionID":2,
 				"OptionName" : "是否按时",
-				"OptionValue" : "-",
+				"OptionValue" : "",
 				"OptionGrade" : ["按时完成", "不按时完成"],
 				"IsAdd" : false
 			}, {
@@ -88,13 +88,13 @@ var G_MedicalEthicsData = [
 				"OptionID":3,
 				"OptionName" : "丙级病历",
 				"OptionGrade" : ["无", "有"],
-				"OptionValue" : "-",
+				"OptionValue" : "",
 				"IsAdd" : false
 			}, {
 				"FromType" : "input",
 				"OptionID":4,
 				"OptionName" : "完成手写大病历份数",
-				"OptionValue" : "-",
+				"OptionValue" : "",
 				"Unit" : "份（必须≥3份，基地留存）"
 			}
 		]

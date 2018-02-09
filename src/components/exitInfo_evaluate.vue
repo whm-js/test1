@@ -21,7 +21,8 @@
             <ul style="width:100%;">
               <li class="evaluate-item" v-for="data in item.ItemOptions">
                 <div class="evaluate-item-left">{{data.OptionName}}</div>
-                <div class="evaluate-item-right">{{data.SelectedGrade}}分</div>
+                <div class="evaluate-item-right" v-if="data.SelectedGrade==-1">-</div>
+                <div class="evaluate-item-right" v-else>{{data.SelectedGrade}}分</div>
               </li>
             </ul>
           </div>
@@ -87,7 +88,7 @@
         methods: {
           //获取老师评语
           getSuggestionInfo:function(){
-            var guid = this.getGuid();
+            var guid = this.getLocalStorageValue('userinfo').guid;
             if(!guid){
               this.$messagebox('温馨提示', '登录状态无效，请重新登录！').then(action => {
                 this.$router.push('/login');

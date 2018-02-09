@@ -2,19 +2,27 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import index from '@/components/index'
 import teacher_index from '@/components/teacher_index'
-import userinfo from '@/components/userinfo' //个人中心
+import secretary_index from '@/components/secretary_index'
+
 import teacher_userinfo from '@/components/userinfo' //个人中心
 import teacher_exit from '@/components/teacher_exit' 
 import teacher_details from '@/components/teacher_details' 
+
+import secretary_userinfo from '@/components/userinfo' //个人中心
+import secretary_exit from '@/components/secretary_exit' 
+import secretary_enter from '@/components/secretary_enter' 
 import login from '@/components/login'
 
 import student_attendance from '@/components/student_attendance'  //学员考勤录入
 import student_evaluate from '@/components/student_evaluate'  //学员评价教师
 import student_summary from '@/components/student_summary'  //学员小结
+import secretary_enterpage from '@/components/secretary_enterpage'  //出科审核
+import secretary_exitpage from '@/components/secretary_exitpage'  //出科审核
 import exitInfo from '@/components/exitInfo'//出科详情
 import exitInfo_evalute from '@/components/exitInfo_evaluate'//出科详情-评价带教老师
 import exitInfo_summary from '@/components/exitInfo_summary'//出科详情-小结
 
+import userinfo from '@/components/userinfo' //个人中心
 import rotate_department from '@/components/rotate_department'//轮转科室
 import rotate_plan from '@/components/rotate_plan'
 import about from '@/components/about' //关于我们
@@ -72,6 +80,23 @@ export default new Router({
         component: teacher_details
       }]
     },{
+      path: '/secretary_index',
+      name: 'secretary_index',
+      component: secretary_index,
+      children:[{
+        path:'/secretary_index/secretary_exit/',
+        name:'secretary_exit',
+        component:secretary_exit
+      },{
+        path: '/secretary_index/userinfo/',
+        name: 'secretary_userinfo',
+        component: secretary_userinfo
+      },{
+        path: '/secretary_index/secretary_enter/',
+        name: 'secretary_enter',
+        component: secretary_enter
+      }]
+    },{
       path: '/login',
       name: 'login',
       component: login
@@ -127,6 +152,14 @@ export default new Router({
       path: '/student_summary',
       name: 'student_summary',
       component: student_summary
+    },{
+      path: '/secretary_enterpage',
+      name: 'secretary_enterpage',
+      component: secretary_enterpage
+    },{
+      path: '/secretary_exitpage',
+      name: 'secretary_exitpage',
+      component: secretary_exitpage
     },{
       path: '/teacher_attendance',
       name: 'teacher_attendance',

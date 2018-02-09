@@ -1,9 +1,7 @@
 <template>
 <div style="width:98%;margin:0 auto;border-radius:6px">
   <mt-header fixed title="修改密码" style="background-color:#37acd3;font-size:16px;">
-      <router-link to="/index/userinfo" slot="left">
-          <mt-button icon="back"></mt-button>
-      </router-link>
+      <mt-button slot="left" icon="back" @click="back"></mt-button>
   </mt-header>
   <div style="height:45px;background-color:#eee">&nbsp;</div>
   <div class="inputdiv">
@@ -35,14 +33,14 @@
             document.body.scrollTop=0;
             document.documentElement.scrollTop=0;
             this.cleanInput();
-            this.guid=this.getGuid();
+            this.guid=this.getLocalStorageValue('userinfo').guid;
         },
         data(){ 
             return{
                 olbpwd1:'',
                 newpwd1:'',
                 newpwd2:'',
-                guid:this.getGuid(),
+                guid:this.getLocalStorageValue('userinfo').guid,
             }
         },
         methods: {
@@ -100,6 +98,28 @@
                 this.olbpwd1='';
                 this.newpwd1='';
                 this.newpwd2='';
+            },
+            back(){
+                var path='/index/userinfo/';
+                var role=this.getLocalStorageValue('userinfo').role;
+                switch (role){
+                    case '学员':
+                        path='/index/userinfo/';
+                        break;
+                    case '带教老师':
+                        path='/teacher_index/userinfo/';
+                        break;
+                    case '教学秘书':
+                        path='/secretary_index/userinfo/';
+                        break;
+                    case '科室负责人':
+                        path='/secretary_index/userinfo/';
+                        break;
+                }
+                this.$router.push({
+                    path:path,
+                    name:'',
+                });
             }
         }
     }

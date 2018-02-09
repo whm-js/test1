@@ -3,35 +3,27 @@
     <mt-header fixed title="个人小结" style="background:#37acd3;font-size:16px;">
       <mt-button icon="back" slot="left" @click.native="backClick"></mt-button>
     </mt-header>
-    <div class="summary-wrap">
-      <div style="height:6px;">
-      </div>
-      <div style="width:98%;overflow:hidden;margin:0px auto;">
-        <textarea class="text" id="personalSummary">{{summaryInfo}}</textarea>
-      </div>
-      <div style="margin-top:10px;">
+
+    <div style="margin-top: 50px;">
+      <h4 style="margin-top:5px;">个人小结：</h4>
+      <div>
         （结合培训细则对医德医风、组织纪律、服务态度及质量、理论学习、管理病床数、学习的病种、所参加的手术、技术操作、查房时的表现等方面进行小结。）
       </div>
+      <div class="t-context">{{summaryInfo ? summaryInfo : '-'}}</div>
 
+      <h4>带教老师评语：</h4>
+      <textarea class="textarea-text" id="personalSummary" v-model="teacherComment"></textarea>
     </div>
+
     <div style="height:60px;"></div>
-    <div class="summary-wrap" style="padding:0px;">
-      <div class="btm-btn-group">
-        <div style="float:left;width:49%;border-right:1px solid #fff;">
-          <div class="btm-btn text-center" v-on:click="toEvaluate">上一项</div>
-        </div>
-        <div style="float:left;width:49%" v-show="eval_queryInfo.modeTag==='add'">
-          <div class="btm-btn text-center" v-on:click="submitData">提交审核</div>
-        </div>
-        <div style="float:left;width:49%" v-show="eval_queryInfo.modeTag==='edit'">
-          <div class="btm-btn text-center" v-on:click="submitData">修改审核</div>
-        </div>
-      </div>
+
+    <div class="t-exit-footer">
+      <div style="float:left;width:49%;border-right:1px solid #fff;" v-on:click="toEvaluate()">上一项</div>
+      <div style="float:left;width:50%;" v-show="eval_queryInfo.modeTag==='add'" v-on:click="submitData()">提交审核</div>
+      <div style="float:left;width:50%;" v-show="eval_queryInfo.modeTag==='edit'" v-on:click="submitData()">修改审核</div>
     </div>
+
   </div>
-
-
-
 </template>
 
 <script>
@@ -42,13 +34,16 @@
       return{
         popupVisible:false,
         eval_queryInfo:{},
-        summaryInfo:''
+        focusFlag:'autofocus', //获取焦点
+        summaryInfo:'',  //个人小结
+        teacherComment:''  //老师评语
       }
     },
     created(){
 
     },
     activated(){
+      window.scrollTo(0, 0);
       this.initSummary();
     },
     methods:{
@@ -64,9 +59,9 @@
           }
         });
       },
-      //申请出科
+      //提交审核
       submitData:function () {
-        var guid = this.getGuid();
+        var guid = this.getLocalStorageValue('userinfo').guid;
         if(!guid){
           this.$messagebox('温馨提示', '登录状态无效，请重新登录！').then(action => {
             this.$router.push('/login');
@@ -74,59 +69,79 @@
           return;
         }
 
-        var personalSummary = document.getElementById('personalSummary').value;
-        if(!personalSummary || personalSummary.length==0){
-          this.$messagebox('温馨提示', '请先填写个人小结，再申请出科！');
-          document.getElementById('personalSummary').focus();
-          return;
-        }
-
-        //考勤录入数据
-        var data = window.localStorage.getItem('attendInfo');
-        if(!data){
-          this.$messagebox('温馨提示', '考勤录入提交异常，请重新录入考勤信息！').then(action => {
-            this.$router.push('/student_attendance');
-          });
-          return;
-        }
-
-        //各数据信息id的数据集合
+        //进入填写评语页面前传递的数据
         var idData = window.localStorage.getItem('eval_queryInfo');
         if(!idData){
+          this.$messagebox('温馨提示', '页面请求无效，请退出重新进入页面！').then(action => {
+            this.$router.push({
+              path:'/teacher_index/teacher_exit/',
+              name:'',
+              query:{
+                planDataIndex:this.$route.query.planDataIndex,
+                checkExitType:this.$route.query.checkExitType  //查看出科情况类型：teacher为教师查看，为空则是学生查看
+              }
+            });
+          });
+          return;
+        }
+        idData = JSON.parse(idData);
+
+        //考勤录入数据、医德医风json
+        var attendData = window.localStorage.getItem(this.eval_queryInfo.UserId+'_attendInfo');
+        if(!attendData){
           this.$messagebox('温馨提示', '考勤录入提交异常，请重新录入考勤信息！').then(action => {
-            this.$router.push('/');
+            this.$router.push({
+              path:'/teacher_evaluate',
+              name:'',
+              query:{
+                planDataIndex:this.$route.query.planDataIndex,
+                checkExitType:this.$route.query.checkExitType  //查看出科情况类型：teacher为教师查看，为空则是学生查看
+              }
+            });
           });
           return;
         }
 
-        data = JSON.parse(data);
-        idData = JSON.parse(idData);
+        attendData = JSON.parse(attendData);
+
+        if(!this.teacherComment){
+          this.$messagebox('温馨提示', '请先填写评语，再提交审批！');
+          return;
+        }
+
+        var Year=new Date(idData.PlanStartDate).getFullYear();
+        var Month=new Date(idData.PlanStartDate).getMonth()+1;
+        var year = Year+''+Month;
 
         var params = {
           guid:guid,
-          HospitalId: idData.HospitalID,
+          //HospitalId: idData.HospitalID,
           PlanStartDate: idData.PlanStartDate,//计划开始时间，用这个去查轮转计划表确定唯一
           UserId: idData.UserId,
           DepartmentId: idData.DepartmentId,
           TeacherId: idData.CoachingId,
+          CreateYear: year,
 
-          IsFullAttendance: data.isFullAttend,
-          PersonalLeave: data.affairLeave,
-          SickLeave: data.sickLeave,
-          SabbaticalLeave: data.sabbaticalLeave,
-          Late: data.late,
-          Absenteeism: data.absentWork,
-          PersonalSummary: this.shieldingWords(personalSummary)
+          IsFullAttendance: attendData.isFullAttend,
+          PersonalLeave: attendData.affairLeave,
+          SickLeave: attendData.sickLeave,
+          SabbaticalLeave: attendData.sabbaticalLeave,
+          Late: attendData.late,
+          Absenteeism: attendData.absentWork,
+          MedicalEthics: JSON.stringify(attendData.medicineJson),
+          TeacherComment: this.shieldingWords(this.teacherComment)
         };
+        
         var that = this;
         var planDataIndex = idData.planDataIndex;
-        this.$httpPost('exit/studExitCourseInfo', params, function (err, json) {
+        this.$httpPost('exit/exit_teacherComment', params, function (err, json) {
           //清除缓存中的数据
-          window.localStorage.removeItem('attendInfo');
+          window.localStorage.removeItem(that.eval_queryInfo.UserId+'_attendInfo');
           window.localStorage.removeItem('eval_queryInfo');
-          window.localStorage.removeItem('rateJson');
+          window.localStorage.removeItem(that.eval_queryInfo.UserId+'_rateJson');
+          window.localStorage.removeItem(that.eval_queryInfo.UserId+'_teacherComment');
 
-          that.$messagebox('温馨提示', '申请出科成功！').then(action => {
+          that.$messagebox('温馨提示', '提交审核成功！').then(action => {
             that.$router.push({
               path:'/teacher_index/teacher_exit/',
               name:'teacher_exit',
@@ -163,64 +178,59 @@
         str = str.replace(/[\ud83c-\udfff]/g, '*'); //屏蔽表情符
         return str;
       },
+      //初始化页面数据
       initSummary:function () {
+        //进入填写评语页面前传递的数据
         var eval_queryInfo = window.localStorage.getItem('eval_queryInfo');
-        var summaryInfo = window.localStorage.getItem('summaryInfo');
-        if(summaryInfo){
-           var _summaryInfo = JSON.parse(summaryInfo)
-        }
-        if(eval_queryInfo){
-          var _eval_queryInfo=JSON.parse(eval_queryInfo);
-          if(_eval_queryInfo){
-              this.eval_queryInfo=_eval_queryInfo;
-            if(_eval_queryInfo.modeTag==='add'){
-                if(_summaryInfo){
-                  this.summaryInfo=_summaryInfo;
-                }
-            }else if(_eval_queryInfo.modeTag==='edit'){
-              this.getExitCourseInfo()
-            }
-          }
-        }
+        if (!eval_queryInfo) {
+          this.$messagebox('温馨提示', '页面请求无效，请退出重新进入页面！').then(action => {
+            this.$router.push('/teacher_index/teacher_exit/');
+          });
+          return;
+        };
 
+        eval_queryInfo=JSON.parse(eval_queryInfo);
+        this.eval_queryInfo=eval_queryInfo;
+
+        this.getExitCourseInfo();
       },
+      //从数据库中获取学员小结和老师评语
       getExitCourseInfo:function () {
+        var guid = this.getLocalStorageValue('userinfo').guid;
+        if(!guid){
+          this.$messagebox('温馨提示', '登录状态无效了，请重新登录！').then(action => {
+            this.$router.push('/login');
+          });
+          return;
+        }
         var vueMdl = this;
-        var eval_queryInfo = vueMdl.eval_queryInfo;
-        var _date=new Date(eval_queryInfo.PlanStartDate)
+        var _date=new Date(vueMdl.eval_queryInfo.PlanStartDate)
         var _year = _date.getFullYear();
         var _month = _date.getMonth()+1;
         var createYear = _year+''+_month;
         var params = {
-          userID:eval_queryInfo.UserId,
-          departmentID: eval_queryInfo.DepartmentId,
+          userID:vueMdl.eval_queryInfo.UserId,
+          departmentID: vueMdl.eval_queryInfo.DepartmentId,
           createYear: createYear,
-          guid:this.getGuid()
-        }
-        var url = 'exit/getExitCourseInfoByID';
-        this.$httpPost(url, params, function (err,data) {
-          var status = data.status;
-          if (status == 200) {
-            var _attendData=data.data.data
-            if(_attendData.length>0){
-              var attendJson = _attendData[0]
-              vueMdl.summaryInfo=attendJson.PersonalSummary;
+          guid:guid
+        };
+        this.$httpPost('exit/getExitCourseInfoByID', params, function (err,json) {
+            var attendData=json.data.data;
+            if(attendData.length>0){
+              vueMdl.summaryInfo=attendData[0].PersonalSummary;
+              vueMdl.teacherComment = attendData[0].TeacherComment;
             }else{
-
+              //从缓存中获取上次录入的评语
+              var teacherComment = window.localStorage.getItem(vueMdl.eval_queryInfo.UserId+'_teacherComment');
+              vueMdl.teacherComment = teacherComment ? teacherComment:'';
             }
-
-          } else if (status === 201) {
-
-          } else {
-
-          }
-        }, 'json')
+        }, 'json');
       },
+      //缓存录入的教师评语本地
       saveSummaryInfo:function () {
         var summaryTxt = this.shieldingWords(document.getElementById('personalSummary').innerText);
-        this.summaryInfo=summaryTxt;
-        var summaryInfo = this.summaryInfo;
-        window.localStorage.setItem('summaryInfo',JSON.stringify(summaryInfo));
+        this.teacherComment=summaryTxt;
+        window.localStorage.setItem(this.eval_queryInfo.UserId+'_teacherComment',JSON.stringify(this.teacherComment));
       },
       //页面头部返回事件控制
       backClick:function(){
@@ -239,61 +249,26 @@
 </script>
 
 <style>
-  body{
-    background:#eee;
-  }
+  body{background:#eee;}
+  ul,li{padding:0px;margin:0px;list-style : none;}
+  h4{margin-bottom: 10px !important;}
+  .t-context{width:92%;min-height: 250px;padding:8px;margin:0px auto;margin-top:10px;line-height:25px;overflow-x:hidden;background:#fff;border:1px solid #ddd;}
+  .textarea-text{
+    width:94%;min-height: 250px;padding:8px;margin:0px auto;font: inherit;color: inherit;
+    border:1px solid #9edaef;overflow-x:hidden;overflow-y: auto;
+    outline:none;resize:none;}
+  .textarea-text:focus{border:1px solid #37acd3 !important;}
 
-  ul{
-    padding:0px;margin:0px;
-  }
-  li{
-    padding:0;
-    list-style : none;
-  }
-  .text{
-    width:100%;height:380px;
-    border:1px solid #ddd;
-    outline:none;resize:none;
-  }
-  .text:focus{border:1px solid #37acd3 !important;padding:5px;}
-
-  .summary-wrap{
-    padding:43px 5px 0 5px;
-  }
-  .summary-wrap >
-  button,
-  input,
-  optgroup,
-  select,
-  textarea {
-    margin: 0;
-    font: inherit;
-    color: inherit;
-  }
-  .summary-wrap .btm-btn-group{
-    position:fixed;
-    left:0;
-    bottom:0;
-    width:100%;
-    height:50px;
-    line-height:50px;
-    background:#37acd3;
-  }
-  .summary-wrap .btm-btn-group .btm-btn{
-    float:left;
-    width:100%;
-    color:#fff;
-  }
-
-  .summary-wrap .text-center{text-align:center;}
-
-
-  .summary-wrap .ul input[type="radio"]{
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    padding: 0;
-  }
-
+  .t-exit-footer {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  color: #fff;
+  text-align: center;
+  background: #37acd3;
+}
 
 </style>

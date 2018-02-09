@@ -90,7 +90,17 @@
         components: {},
         data(){
             return{
-                rateJson:{scoreValue:[],overallEval:'合格',suggestion:'', totalScore:0},//评分数据集
+                rateJson:{
+                  scoreValue:[
+                    {value:[0,0,0,0,0],groupScore:0},
+                    {value:[0,0,0,0,0],groupScore:0},
+                    {value:[0,0,0,0,0],groupScore:0},
+                    {value:[0,0,0,0,0],groupScore:0}
+                  ],
+                  overallEval:'合格',
+                  suggestion:'',
+                  totalScore:0
+                },//评分数据集
                 TeachingJson : {},//评分项json
                 eval_queryInfo:{}//轮转计划参数集
             }
@@ -148,10 +158,16 @@
           //初始化评分数据
           initRate:function () {
             var eval_queryInfo=window.localStorage.getItem('eval_queryInfo');
-
-           if(eval_queryInfo){this.eval_queryInfo=JSON.parse(eval_queryInfo)}
-
-            this.getSuggestionInfo();
+           if(eval_queryInfo){
+             var _rateJson=window.localStorage.getItem('rateJson');
+             this.TeachingJson=Teachingdata;
+               this.eval_queryInfo=JSON.parse(eval_queryInfo);
+               if(this.eval_queryInfo.modeTag==='edit'&&!_rateJson){
+                 this.getSuggestionInfo();
+               }else{
+                 this.showStoreRateData();
+               }
+           }
           },
           //计算总分
           countTotalScore:function (rateArr) {
@@ -193,13 +209,13 @@
               Score:rateJson.totalScore,
               OverallEval:rateJson.overallEval,
               Suggestion:rateJson.suggestion,
-              guid:this.getGuid()
+              guid:this.getLocalStorageValue('userinfo').guid
             }
             var url = 'rotate/submitSuggestion';
             this.$httpPost(url, params, function (err, data) {
               var status = data.status;
               if (status == 200) {
-                  window.localStorage.removeItem('rateJson');
+                  //window.localStorage.removeItem('rateJson');
                 vueMdl.$Toast('提交成功');
               } else if (status === 401) {
 
@@ -213,8 +229,6 @@
           },
           //请求评分、建议、评级数据
           getSuggestionInfo:function () {
-            var _rateJson=window.localStorage.getItem('rateJson');
-            var  _Teachingdata =Teachingdata
             var vueMdl = this;
             var eval_queryInfo=vueMdl.eval_queryInfo;
             var params = {
@@ -224,7 +238,7 @@
               DepartmentId: eval_queryInfo.DepartmentId,
               TeacherId: eval_queryInfo.CoachingId,
               TeacherName: eval_queryInfo.CoachingName,
-              guid:this.getGuid()
+              guid:this.getLocalStorageValue('userinfo').guid
             }
             var url = 'rotate/getSuggestion';
             this.$httpPost(url, params, function (err, data) {
@@ -232,24 +246,8 @@
               if (status == 200) {
                 var evalData=data.data.data[0];
                 if(!evalData){
-                  vueMdl.TeachingJson=_Teachingdata;
-                  if(_rateJson){
-                    vueMdl.rateJson=JSON.parse(_rateJson);
-                    vueMdl.countTotalScore(vueMdl.rateJson.scoreValue);
-                  }else{
-                    var rateArr=[
-                      {value:[0,0,0,0,0],groupScore:0},
-                      {value:[0,0,0,0,0],groupScore:0},
-                      {value:[0,0,0,0,0],groupScore:0},
-                      {value:[0,0,0,0,0],groupScore:0}
-                    ];
-                    vueMdl.rateJson.scoreValue=rateArr;
-                  }
-                  vueMdl.countTotalScore(vueMdl.rateJson.scoreValue);
+                      vueMdl.showStoreRateData();
                 }else{
-                  if(_rateJson){
-                    vueMdl.rateJson=JSON.parse(_rateJson);
-                  }else{
                     vueMdl.TeachingJson=JSON.parse(evalData.Content);
                     vueMdl.rateJson.suggestion=evalData.Suggestion;
                     vueMdl.rateJson.overallEval=evalData.OverallEval;
@@ -272,9 +270,6 @@
                     vueMdl.rateJson.scoreValue=rateArr;
                     vueMdl.countTotalScore(rateArr);
                   }
-
-                }
-
               } else if (status === 201) {
                 //登录失效
 
@@ -282,6 +277,23 @@
 
               }
             }, 'json')
+          },
+          showStoreRateData:function () {
+            var _rateJson=window.localStorage.getItem('rateJson');
+            if(_rateJson){
+              this.rateJson=JSON.parse(_rateJson);
+            }else{
+                var rateArr=[];
+                for(var i=0;i<this.TeachingJson.TeachingItems.length;i++){
+                    var rateItmArr=[];
+                    for(var j=0;j<this.TeachingJson.TeachingItems[i].ItemOptions.length;j++){
+                      rateItmArr.push(0);
+                    }
+                  rateArr.push({value:rateItmArr,groupScore:0})
+                }
+                this.rateJson.scoreValue=rateArr;
+            }
+            this.countTotalScore(this.rateJson.scoreValue);
           },
           //保存用户填写建议及评分数据
           saveRateInfo:function () {

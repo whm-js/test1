@@ -67,7 +67,7 @@
       },
       //申请出科
       submitData:function () {
-        var guid = this.getGuid();
+        var guid = this.getLocalStorageValue('userinfo').guid;
         if(!guid){
           this.$messagebox('温馨提示', '登录状态无效，请重新登录！').then(action => {
             this.$router.push('/login');
@@ -196,7 +196,7 @@
           userID:eval_queryInfo.UserId,
           departmentID: eval_queryInfo.DepartmentId,
           createYear: createYear,
-          guid:this.getGuid()
+          guid:this.getLocalStorageValue('userinfo').guid
         }
         var url = 'exit/getExitCourseInfoByID';
         this.$httpPost(url, params, function (err,data) {

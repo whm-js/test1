@@ -32,8 +32,9 @@ import { Picker } from 'mint-ui';
 import { Popup } from 'mint-ui';
 import { Toast } from 'mint-ui';
 import { Rate } from 'element-ui';
-// Vue.use(Icon)
 Vue.use(Rate)
+import { Tooltip } from "element-ui";
+Vue.use(Tooltip);
 
 Vue.component(Cell.name, Cell);
 Vue.component(TabContainer.name, TabContainer);

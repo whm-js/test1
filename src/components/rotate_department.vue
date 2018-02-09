@@ -175,7 +175,7 @@
           var params = {
             page: 1,
             pageNum: 1000,
-            guid:this.getGuid()
+            guid:this.getLocalStorageValue('userinfo').guid
           }
           this.$httpPost(url, params, function (err, data) {
             if (err) {
@@ -323,7 +323,7 @@
         this.$store.commit('updataindexSelected','rotate_department');
         var planDataIndex = this.$route.query.planDataIndex;//页面跳转首页索引参数
         var exitSuccess = this.$route.query.exitSuccess;//申请出科成功跳转首页标识参数
-        if(this.queryInfo.length == 0||this.guid!==this.getGuid()){//页面无数据或换账号重新请求数据
+        if(this.queryInfo.length == 0||this.guid!==this.getLocalStorageValue('userinfo').guid){//页面无数据或换账号重新请求数据
           this. popupVisible=false;
           this.clickModalHide=true;
           this.queryInfo=[];

@@ -3,12 +3,10 @@
     <mt-header fixed title="评价学员" style="background:#37acd3;font-size:16px;">
       <mt-button icon="back" slot="left" @click.native="backClick"></mt-button>
     </mt-header>
-    <div class="eval-wrap top-wrap" >
-      <div style="padding:5px;">
-        <div class="top-title">
-          <div style="float:left;margin-left:10px;">评价项目及考核指标</div>
-          <div style="float:right;margin-right:10px;">总分：{{rateJson.totalScore}}</div>
-        </div>
+    <div class="eval-wrap t-top-wrap" >
+      <div class="t-top-title">
+        <div style="float:left;margin-left:10px;">评价项目及考核指标</div>
+        <div style="float:right;margin-right:10px;">总分：{{rateJson.totalScore}}</div>
       </div>
     </div>
 
@@ -38,12 +36,12 @@
       <div class="eval-panel" style="background:none;margin-top:10px;">
         <div class="eval-panel-title text-center">建议和意见</div>
         <div style="padding:0 5px;">
-          <textarea class="text-area" id="adviceTextArea">{{rateJson.suggestion}}</textarea>
+          <textarea class="text-area" id="adviceTextArea" v-model="rateJson.suggestion"></textarea>
         </div>
       </div>
     </div>
 
-    <div class="eval-wrap" style="width:100%;height:90px;background:#eee;z-index:9;">
+    <div class="eval-wrap" style="width:94%;height:90px;background:#eee;z-index:9;">
       <div>
         <div class="eval-panel" style="margin-top:15px;margin-bottom:80px;">
           <div class="eval-panel-title text-center">整体评价</div>
@@ -75,9 +73,6 @@
     </div>
 
   </div>
-
-
-
 </template>
 
 <script>
@@ -88,14 +83,28 @@
         components: {},
         data(){
             return{
-                rateJson:{scoreValue:[],overallEval:'合格',suggestion:'', totalScore:0},//评分数据集
+              rateJson:{
+                scoreValue:[
+                  {value:[5,5,5,5,5],groupScore:0},
+                  {value:[5,5,5,5,5],groupScore:0},
+                  {value:[5,5,5,5,5],groupScore:0},
+                  {value:[5,5,5,5,5],groupScore:0},
+                  {value:[5,5,5,5,5],groupScore:0},
+                  {value:[5,5,5,5,5],groupScore:0}
+                ],
+                overallEval:'合格',
+                suggestion:'',
+                totalScore:0
+              },//评分数据集
                 TeachingJson : {},//评分项json
                 eval_queryInfo:{}//轮转计划参数集
             }
         },
         created(){
+
         },
         methods:{
+          //上一项，返回考勤录入页面
           toAttendance:function () {
             this.saveRateInfo();
             this.$router.push({
@@ -107,7 +116,7 @@
               }
             });
           },
-          //跳转小结页面
+          //下一项，进入填写评语页面
           toSummary:function () {
             this.saveRateInfo();
             this.submitSuggestion();
@@ -126,10 +135,8 @@
             var groupIdx = evt.getAttribute('groupidx');//星级控件组索引
             var itmIdx =  evt.getAttribute('itmidx');//星级控件项索引
             var lastRate =  evt.getAttribute('lastrate');//前一次评分
-            if(lastRate){//前一次评分是1并且当前打分为1，让评分归0
-              if(lastRate==='1'&&e===1){
-                  e=0
-              }
+            if(lastRate&&lastRate==='1'&&e===1){
+              e=0;
             }
             evt.setAttribute('lastrate',e);
 
@@ -138,18 +145,28 @@
                 rateArr.push(this.rateJson.scoreValue[i]);
             }
             rateArr[groupIdx].value[itmIdx]=e;
-            var _teachingJson = this.TeachingJson.EvaluationItems;
-            _teachingJson[groupIdx].ItemOptions[itmIdx].SelectedGrade=e;
-
-            this.TeachingJson.EvaluationItems =_teachingJson;
+            this.TeachingJson.EvaluationItems[groupIdx].ItemOptions[itmIdx].SelectedGrade=e;
             this.countTotalScore(rateArr);
           },
           //初始化评分数据
           initRate:function () {
+            //进入填写评语页面前传递的数据
             var eval_queryInfo=window.localStorage.getItem('eval_queryInfo');
+            if(!eval_queryInfo){
+              this.$messagebox('温馨提示', '页面请求无效，请退出重新进入页面！').then(action => {
+                this.$router.push({
+                  path:'/teacher_index/teacher_exit/',
+                  name:'',
+                  query:{
+                    planDataIndex:this.$route.query.planDataIndex,
+                    checkExitType:this.$route.query.checkExitType  //查看出科情况类型：teacher为教师查看，为空则是学生查看
+                  }
+                });
+              });
+              return;
+            }
 
-           if(eval_queryInfo){this.eval_queryInfo=JSON.parse(eval_queryInfo)}
-
+            this.eval_queryInfo=JSON.parse(eval_queryInfo);
             this.getSuggestionInfo();
           },
           //计算总分
@@ -168,107 +185,110 @@
           },
           //评级
           overallEvalChange:function (evt) {
-            var _value= evt.currentTarget.textContent;
-            this.rateJson.overallEval=_value
+            this.rateJson.overallEval=evt.currentTarget.textContent;
           },
           //提交评分
           submitSuggestion:function () {
-            var vueMdl = this;
-            var rateJson=vueMdl.rateJson;
-            var eval_queryInfo=vueMdl.eval_queryInfo;
-            var teachingJson=vueMdl.TeachingJson;
-            if(eval_queryInfo.CoachingId===-1||eval_queryInfo.CoachingId===null){
-              vueMdl.$Toast('未被分配带教老师');
-                return;
-            }//查看出科情况类型：teacher为教师查看，为空则是学生查看
-            var appraisalType = this.$route.query.checkExitType ? 1:0;
-            var params = {
-              PlanStartDate: eval_queryInfo.PlanStartDate,////计划开始时间，用于存评价年份
-              AppraisalType: appraisalType,//学生评价老师
-              UserId: eval_queryInfo.UserId,
-              DepartmentId: eval_queryInfo.DepartmentId,
-              TeacherId: eval_queryInfo.CoachingId,
-              TeacherName: eval_queryInfo.CoachingName,
-              Content:JSON.stringify(teachingJson),
-              Score:rateJson.totalScore,
-              OverallEval:rateJson.overallEval,
-              Suggestion:rateJson.suggestion,
-              guid:this.getGuid()
+            var guid = this.getLocalStorageValue('userinfo').guid;
+            if(!guid){
+              this.$messagebox('温馨提示', '登录状态无效了，请重新登录！').then(action => {
+                this.$router.push('/login');
+              });
+              return;
             }
-            var url = 'rotate/submitSuggestion';
-            this.$httpPost(url, params, function (err, data) {
-              window.localStorage.removeItem('rateJson');
+            var vueMdl = this;
+
+            var params = {
+              PlanStartDate: vueMdl.eval_queryInfo.PlanStartDate,////计划开始时间，用于存评价年份
+              AppraisalType: 1,//老师评价学生
+              UserId: vueMdl.eval_queryInfo.UserId,
+              DepartmentId: vueMdl.eval_queryInfo.DepartmentId,
+              TeacherId: vueMdl.eval_queryInfo.CoachingId,
+              TeacherName: vueMdl.eval_queryInfo.CoachingName,
+              Content:JSON.stringify(vueMdl.TeachingJson),
+              Score:vueMdl.rateJson.totalScore,
+              OverallEval:vueMdl.rateJson.overallEval,
+              Suggestion:vueMdl.rateJson.suggestion,
+              guid:guid
+            }
+            this.$httpPost('rotate/submitSuggestion', params, function (err, data) {
+              window.localStorage.removeItem(vueMdl.eval_queryInfo.UserId+'_rateJson');
               vueMdl.$Toast('提交成功');
             }, 'json')
           },
           //请求评分、建议、评级数据
           getSuggestionInfo:function () {
-            var _rateJson=window.localStorage.getItem('rateJson');
-            var vueMdl = this;
-            var eval_queryInfo=vueMdl.eval_queryInfo;
-            var params = {
-              PlanStartDate: eval_queryInfo.PlanStartDate,////计划开始时间，用于评价年份查询条件
-              AppraisalType: 1,
-              UserId: eval_queryInfo.UserId,
-              DepartmentId: eval_queryInfo.DepartmentId,
-              TeacherId: eval_queryInfo.CoachingId,
-              TeacherName: eval_queryInfo.CoachingName,
-              guid:this.getGuid()
+            var guid = this.getLocalStorageValue('userinfo').guid;
+            if(!guid){
+              this.$messagebox('温馨提示', '登录状态无效了，请重新登录！').then(action => {
+                this.$router.push('/login');
+              });
+              return;
             }
-            var url = 'rotate/getSuggestion';
-            this.$httpPost(url, params, function (err, data) {
+            var vueMdl = this;
+            var params = {
+              PlanStartDate: vueMdl.eval_queryInfo.PlanStartDate,////计划开始时间，用于评价年份查询条件
+              AppraisalType: 1,
+              UserId: vueMdl.eval_queryInfo.UserId,
+              DepartmentId: vueMdl.eval_queryInfo.DepartmentId,
+              TeacherId: vueMdl.eval_queryInfo.CoachingId,
+              TeacherName: vueMdl.eval_queryInfo.CoachingName,
+              guid:guid
+            }
+            this.$httpPost('rotate/getSuggestion', params, function (err, data) {
               var evalData=data.data.data[0];
               if(!evalData){//从接口获取不到数据
                 vueMdl.TeachingJson=Evaluationdata;
-                if(_rateJson){  //从缓存中获取上一次操作的数据
-                  vueMdl.rateJson=JSON.parse(_rateJson);
-                  vueMdl.countTotalScore(vueMdl.rateJson.scoreValue);
-                }else{
-                  var rateArr=[
-                    {value:[0,0,0,0,0],groupScore:0},
-                    {value:[0,0,0,0,0],groupScore:0},
-                    {value:[0,0,0,0,0],groupScore:0},
-                    {value:[0,0,0,0,0],groupScore:0}
-                  ];
-                  vueMdl.rateJson.scoreValue=rateArr;
-                }
+                vueMdl.showStoreRateData();
                 vueMdl.countTotalScore(vueMdl.rateJson.scoreValue);
               }else{
-                if(_rateJson){  //从缓存中获取上一次操作的数据
-                  vueMdl.rateJson=JSON.parse(_rateJson);
-                }else{
                   vueMdl.TeachingJson=JSON.parse(evalData.Content);
                   vueMdl.rateJson.suggestion=evalData.Suggestion;
                   vueMdl.rateJson.overallEval=evalData.OverallEval;
-                  var EvaluationItems = vueMdl.TeachingJson.EvaluationItems;
-                  var rateArr=[];
-                  for(var i =0;i<EvaluationItems.length;i++){
-                    var itemOptions = EvaluationItems[i].ItemOptions;
-                    var valObj={value:[],groupScore:0};
-                    for(var j=0;j<itemOptions.length;j++){
-                      var selectedGrade=itemOptions[j].SelectedGrade;
-                      if(selectedGrade!==-1){
-                        valObj.value.push(selectedGrade);
-                      }else{
-                        valObj.value.push(0);
-                      }
+                  if(vueMdl.TeachingJson!==''){
+                    var EvaluationItems = vueMdl.TeachingJson.EvaluationItems;
+                    var rateArr=[];
+                    for(var i =0;i<EvaluationItems.length;i++){
+                      var itemOptions = EvaluationItems[i].ItemOptions;
+                      var valObj={value:[],groupScore:0};
+                      for(var j=0;j<itemOptions.length;j++){
+                        var selectedGrade=itemOptions[j].SelectedGrade;
+                        if(selectedGrade!==-1){
+                          valObj.value.push(selectedGrade);
+                        }else{
+                          valObj.value.push(0);
+                        }
 
+                      }
+                      rateArr.push(valObj);
                     }
-                    rateArr.push(valObj);
+                    vueMdl.rateJson.scoreValue=rateArr;
+                    vueMdl.countTotalScore(rateArr);
                   }
-                  vueMdl.rateJson.scoreValue=rateArr;
-                  vueMdl.countTotalScore(rateArr);
-                }
               }
-              
             }, 'json');
+          },
+          showStoreRateData:function () {//显示缓存数据
+            var _rateJson=window.localStorage.getItem(this.eval_queryInfo.UserId+'_rateJson');
+            if(_rateJson){
+              this.rateJson=JSON.parse(_rateJson);
+            }else{
+              var rateArr=[];
+              for(var i=0;i<this.TeachingJson.EvaluationItems.length;i++){
+                var rateItmArr=[];
+                for(var j=0;j<this.TeachingJson.EvaluationItems[i].ItemOptions.length;j++){
+                  rateItmArr.push(0);
+                }
+                rateArr.push({value:rateItmArr,groupScore:0})
+              }
+              this.rateJson.scoreValue=rateArr;
+            }
+            this.countTotalScore(this.rateJson.scoreValue);
           },
           //保存用户填写建议及评分数据
           saveRateInfo:function () {
-            var suggestion = this.shieldingWords(document.getElementById('adviceTextArea').value);
-            this.rateJson.suggestion=suggestion;
-            var _rateJson = this.rateJson;
-            window.localStorage.setItem('rateJson',JSON.stringify(_rateJson))
+            this.rateJson.suggestion=this.shieldingWords(this.rateJson.suggestion);
+            window.localStorage.setItem(this.eval_queryInfo.UserId+'_rateJson',JSON.stringify(this.rateJson))
           },
           //录入的内容进行特殊字符屏蔽操作
           shieldingWords:function(str) {
@@ -298,9 +318,8 @@
           //页面头部返回事件控制
           backClick:function(){
             this.saveRateInfo();
-            var path = this.$route.query.checkExitType ? '/teacher_index/teacher_exit/':'/index/rotate_department/';
             this.$router.push({
-              path:path,
+              path:'/teacher_index/teacher_exit/',
               name:'',
               query:{
                 planDataIndex:this.$route.query.planDataIndex,
@@ -310,6 +329,7 @@
           }
         },
         activated(){
+          window.scrollTo(0, 0);
           this.initRate();
         }
     }
@@ -327,11 +347,12 @@
     padding:0;
     list-style : none;
   }
-  .top-wrap{
-    position:fixed;top:40px;left:0;width:100%;z-index:9;height:55px;background:#eee;
+  .t-top-wrap{
+    width:100%;
+    position:fixed;top:40px;left:4px;right:5px;z-index:9;height:55px;padding-top:15px;background:#eee;
   }
   .eval-wrap{
-
+    width:98%;margin:0px auto;
   }
   .eval-wrap .btm-btn-group{
     position:fixed;
@@ -382,8 +403,8 @@
     padding: 0;
   }
 
-  .eval-wrap .top-title{
-    float:left;background:#fff;width:100%;height:20px;padding:10px 0;border-radius:6px;
+  .eval-wrap .t-top-title{
+    width:100%;height:40px;margin:0px auto;line-height:40px;border-radius:6px;background:#fff;
   }
   .eval-wrap .eval-panel{float:left;background:#fff;width:100%;border-radius:6px;}
   .eval-wrap .eval-panel-title{padding:10px 10px 0px 10px;color:#37acd3;}

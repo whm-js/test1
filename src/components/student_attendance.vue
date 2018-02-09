@@ -227,7 +227,7 @@
               userID:eval_queryInfo.UserId,
               departmentID: eval_queryInfo.DepartmentId,
               createYear: createYear,
-              guid:this.getGuid()
+              guid:this.getLocalStorageValue('userinfo').guid
             }
             var url = 'exit/getExitCourseInfoByID';
             this.$httpPost(url, params, function (err,data) {

@@ -1,0 +1,32 @@
+﻿收治病例记录表 导入 demand_disease_record 病种明细表
+
+1、检查我们的数据库中人员信息有没有导入：
+select * from ytpublicdb.user where RealName in ('黄升','闭荣刚','张佳','韦阳财','罗雪婷','覃珍芳','黄雅丽','蒋海珊','岑江林','黄华逸','潘瑞艳','谭春李','李文怡','黄海珍','卢粤飞','罗柳梅','覃颜森')
+  
+2、查询他们的手术记录语句：
+select LTrim(RTrim(c.住院号)) as 住院号,LTrim(RTrim(c.患者姓名)) as 患者姓名,LTrim(RTrim(c.主要诊断)) as 主要诊断,LTrim(RTrim(c.病种)) as 病种,LTrim(RTrim(u.姓名)) as 姓名 ,LTrim(RTrim(p.轮转科室)) as 轮转科室,p.入科时间,LTrim(RTrim(p.指导老师)) as 指导老师 
+from dbo."收治病例记录表" c
+left join dbo."人员信息表" u 
+on c.人员ID=u.ID 
+left join dbo."轮转记录表" p 
+on c.轮转记录ID=p.ID 
+where u.姓名 in ('黄升','闭荣刚','张佳','韦阳财','罗雪婷','覃珍芳','黄雅丽','蒋海珊','岑江林','黄华逸','潘瑞艳','谭春李','李文怡','黄海珍','卢粤飞','罗柳梅','覃颜森')
+order by u.姓名
+
+
+3、将查询到的数据导出成csv文件，并处理将时间变成字符串格式，
+   方法：1、先将时间全部复制出来贴到TXT文件中；2、将csv文件中的时间列设置成文本格式；3、将贴到TXT的时间复制到时间列。
+
+
+4、生成导入的SQL，公式是：
+   注意：如果csv文件的列发生改变，这个公式的对应数据列是需要相应改变的。
+="replace into standardized_training_db.demand_disease_record set UserId=(select UserID from ytpublicdb.user where RealName='"&E2&"'),DiseaseSerialId=-1,MedicalRecord='"&A2&"',Patient='"&B2&"',PrimaryDiagnose='"&C2&"',Remark='轮转科室："&F2&"；入科时间："&G2&"；指导老师："&H2&"';"
+
+生成的SQL例子是：
+replace into standardized_training_db.demand_disease_record set UserId=(select UserID from ytpublicdb.user where RealName='岑江林'),DiseaseSerialId=-1,MedicalRecord='10421',Patient='程凯风',PrimaryDiagnose='手软组织疾患',Remark='轮转科室：急诊科；入科时间：2017/10/9 9:50；指导老师：黄鸿';
+replace into standardized_training_db.demand_disease_record set UserId=(select UserID from ytpublicdb.user where RealName='岑江林'),DiseaseSerialId=-1,MedicalRecord='1797',Patient='关敏',PrimaryDiagnose='泌尿道感染',Remark='轮转科室：急诊科；入科时间：2017/10/9 9:50；指导老师：黄鸿';
+replace into standardized_training_db.demand_disease_record set UserId=(select UserID from ytpublicdb.user where RealName='岑江林'),DiseaseSerialId=-1,MedicalRecord='701925',Patient='张玉',PrimaryDiagnose='钙缺乏',Remark='轮转科室：产科；入科时间：2017/8/3 15:23；指导老师：李娟';
+replace into standardized_training_db.demand_disease_record set UserId=(select UserID from ytpublicdb.user where RealName='岑江林'),DiseaseSerialId=-1,MedicalRecord='86153',Patient='方小琳',PrimaryDiagnose='妊娠状态',Remark='轮转科室：产科；入科时间：2017/8/3 15:23；指导老师：李娟';
+
+5、查询这些人导入的数据：
+select * from standardized_training_db.demand_disease_record where UserId in (select UserID from ytpublicdb.user where RealName in ('黄升','闭荣刚','张佳','韦阳财','罗雪婷','覃珍芳','黄雅丽','蒋海珊','岑江林','黄华逸','潘瑞艳','谭春李','李文怡','黄海珍','卢粤飞','罗柳梅','覃颜森'))

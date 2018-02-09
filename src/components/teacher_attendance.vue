@@ -1,11 +1,12 @@
 <template>
   <div>
-    <mt-header fixed title="考勤录入" style="background:#37acd3;font-size:16px;">
+    <mt-header fixed title="考核状况" style="background:#37acd3;font-size:16px;">
       <mt-button icon="back" slot="left" @click.native="backClick"></mt-button>
     </mt-header>
-    <div class="attend-wrap" style="min-height: 330px;margin-top:55px;">
+    <div class="attend-wrap" style="width:98%;min-height: 330px;margin: 55px auto 35px;">
       <div class="panel">
         <ul class="ul">
+          <li class="li"  style="height:35px;color:#37acd3;text-align:center;font-weight: bold;border-bottom: 1px solid #ddd;">考勤情况</li>
           <li class="li" >
             <div class="li-wrap border-btm" style="padding-right:0px;">
               <div class="li-title text-left">是否全勤</div>
@@ -76,12 +77,15 @@
           <th colspan="3" style="height:45px;color:#37acd3;">医德医风</th>
         </thead>
         <tbody>
-          <template v-for="item in MedicineJson">
+          <template v-for="(item,pIndex) in medicineJson">
               <template v-if="item.ItemList.length==1">
                 <tr>
                   <td colspan="2">{{item.ItemName}}：</td>
-                  <td style="width:100px;color:#999;" @click="optionClick(item.ItemList[0].OptionGrade)">
-                    <span>请选择</span><span class="more-icn" ></span>
+                  <td class="td-font" :style="item.ItemList[0].OptionValue ? 'color:#000':'color:#999'" @click="optionClick(item.ItemList[0].OptionGrade,pIndex,0)">
+                    <template v-if="item.ItemList[0].OptionValue">{{item.ItemList[0].OptionValue}}</template>
+                    <template v-else>
+                      <span>请选择</span><span class="more-icn" ></span>
+                    </template>
                   </td>
                 </tr>
               </template>
@@ -95,9 +99,14 @@
                     {{item.ItemList[index-1].OptionName}}{{data.OptionName}}）：
                   </td>
                   <td class="td" v-else>{{data.OptionName}}：</td>
-                  <td style="width:100px;color:#999;" v-if="data.FromType=='radio'" @click="optionClick(data.OptionGrade)"><span>请选择</span><span class="more-icn" ></span></td>
-                  <td style="width:100px;color:#999;padding-right: 3px;" v-else>
-                    <input :placeholder="'请输入'+data.Unit+'数'" type="text" class="mint-field-core">
+                  <td class="td-font" :style="data.OptionValue ? 'color:#000':'color:#999'" v-if="data.FromType=='radio'" @click="optionClick(data.OptionGrade,pIndex,index)">
+                    <template v-if="data.OptionValue">{{data.OptionValue}}</template>
+                    <template v-else>
+                      <span>请选择</span><span class="more-icn" ></span>
+                    </template>
+                  </td>
+                  <td class="td-font2" :style="data.OptionValue ? 'color:#000':'color:#999'" v-else>
+                    <input :placeholder="data.Unit.indexOf('）')>=0||data.Unit=='' ? '请输入':'请输入'+data.Unit+'数'" type="text" class="mint-field-core" :style="data.OptionValue ? 'color:#000':'color:#999'" :lang="pIndex+'-'+index" v-on:blur="onValuesInput($event)" :value="data.OptionValue ? data.OptionValue : ''"/>
                   </td>
                 </tr>
               </template>
@@ -112,10 +121,10 @@
         </div>
     </div>
     <!--选择框弹窗-->
-    <mt-popup v-model="popupVisiblePicker" position="bottom" style="width:100%;"> 
-        <div class="picker-toolbar">  
-            <span class="mint-datetime-action mint-datetime-cancel" @click="cancelHide">取消</span>  
-            <span class="mint-datetime-action mint-datetime-confirm" @click="cancelHide">确定</span>  
+    <mt-popup v-model="popupVisiblePicker" position="bottom" style="width:100%;">
+        <div class="picker-toolbar">
+            <span class="mint-datetime-action mint-datetime-cancel" @click="cancelHide('cancel')">取消</span>
+            <span class="mint-datetime-action mint-datetime-confirm" @click="cancelHide()">确定</span>
         </div>
         <mt-picker :slots="slots" @change="onValuesChange"></mt-picker>
     </mt-popup>
@@ -142,15 +151,21 @@
                 sourVal:0,
                 popupVisiblePicker:false, //是否展示弹窗
                 slots:[],//选项值配置
-                MedicineJson : G_MedicalEthicsData  //医德医风json
+
+                slotsValue:'',  //选择的弹窗值
+                itemId:0, //医德医风item的索引
+                optionId:0, //医德医风option的索引
+                medicineJson : G_MedicalEthicsData  //医德医风json
             }
         },
         created(){
         },
         activated(){
+          window.scrollTo(0, 0);
           this.initAttendInfo();
         },
         methods:{
+          //下一项，进入评价学员页面
           toEvaluate:function () {
             this.saveAttendInfo();
             this.$router.push({
@@ -162,17 +177,19 @@
               }
             });
           },
+          //监控选择了全勤，则相关数据设置为0
           attendChange:function (evt) {
             var _value = evt.currentTarget.value;
             this.isFullAttend=_value;
             if(_value==='是'){
-              this.affairLeave=0
-              this.sickLeave=0
-              this.sabbaticalLeave=0
-              this.late=0
-              this.absentWork=0
+              this.affairLeave=0;
+              this.sickLeave=0;
+              this.sabbaticalLeave=0;
+              this.late=0;
+              this.absentWork=0;
             }
           },
+          //考勤录入的失去焦点事件监控
           inputBlur:function (evt) {
             clearInterval(this.focusTime);
             var textInputIdArr=['affair_leave','sick_leave','sabbatical_leave','late','absent_work']
@@ -185,11 +202,23 @@
                  val=parseInt(val) ;
                 if(val>0){
                   isAllZero=false;
-                  if(_id==='affair_leave'){this.affairLeave=val}
-                  if(_id==='sick_leave'){this.sickLeave=val}
-                  if(_id==='sabbatical_leave'){this.sabbaticalLeave=val}
-                  if(_id==='late'){this.late=val}
-                  if(_id==='absent_work'){this.absentWork=val}
+                  switch(_id){
+                    case 'affair_leave':
+                      this.affairLeave=val;
+                    break;
+                    case 'sick_leave':
+                      this.sickLeave=val;
+                    break;
+                    case 'sabbatical_leave':
+                      this.sabbaticalLeave=val;
+                    break;
+                    case 'late':
+                      this.late=val;
+                    break;
+                    case 'absent_work':
+                      this.absentWork=val;
+                    break;
+                  };
                 }
               }else{
                 document.getElementById(_id).value=0;
@@ -207,6 +236,7 @@
             }
 
           },
+          //获取焦点，监控文本框的输入情况
           inputFocus:function (evt) {
               this.sourVal=evt.target.value;
             var getNumStaff =function () {
@@ -216,35 +246,31 @@
             }
             this.focusTime = setInterval(getNumStaff, 100);
           },
+          //初始化考勤录入状态信息
           initAttendInfo:function () {
-            var attendInfo = window.localStorage.getItem('attendInfo');
+            //进入填写评语页面前传递的数据
             var eval_queryInfo = window.localStorage.getItem('eval_queryInfo');
-            if(attendInfo){
-                this.attendInfo=JSON.parse(attendInfo);
+            if(!eval_queryInfo){
+              this.$messagebox('温馨提示', '页面请求无效，请退出重新进入页面！').then(action => {
+                this.$router.push({
+                  path:'/teacher_index/teacher_exit/',
+                  name:'',
+                  query:{
+                    planDataIndex:this.$route.query.planDataIndex,
+                    checkExitType:this.$route.query.checkExitType  //查看出科情况类型：teacher为教师查看，为空则是学生查看
+                  }
+                });
+              });
+              return;
             }
-            if(eval_queryInfo){
-              this.eval_queryInfo=JSON.parse(eval_queryInfo);
-            }
-            if(attendInfo){
-              var _attendInfo = this.attendInfo;
-              this.isFullAttend=_attendInfo.isFullAttend;
-              this.affairLeave=_attendInfo.affairLeave;
-              this.sickLeave=_attendInfo.sickLeave;
-              this.sabbaticalLeave=_attendInfo.sabbaticalLeave;
-              this.late=_attendInfo.late;
-              this.absentWork=_attendInfo.absentWork;
-            }else{
-              this.isFullAttend='是';
-              this.affairLeave=0;
-              this.sickLeave=0;
-              this.sabbaticalLeave=0;
-              this.late=0;
-              this.absentWork=0;
-            }
-            if(this.eval_queryInfo.modeTag==='edit'&&!attendInfo){
-              this.getExitCourseInfo()
-            }
+            this.eval_queryInfo=JSON.parse(eval_queryInfo);
+
+            //修改评语，从数据库中获取考勤相关信息
+            //if(this.eval_queryInfo.modeTag==='edit'){
+              this.getExitCourseInfo();
+            //}
           },
+          //将操作的数据缓存本地
           saveAttendInfo:function () {
             var attendInfo={
               isFullAttend:this.isFullAttend,
@@ -252,11 +278,20 @@
               sickLeave:this.sickLeave,
               sabbaticalLeave:this.sabbaticalLeave,
               late:this.late,
-              absentWork:this.absentWork
+              absentWork:this.absentWork,
+              medicineJson:this.medicineJson //医德医风
             }
-            window.localStorage.setItem('attendInfo',JSON.stringify(attendInfo));
+            window.localStorage.setItem(this.eval_queryInfo.UserId+'_attendInfo',JSON.stringify(attendInfo));
           },
+          //获取上一次录入的学员出科相关信息
           getExitCourseInfo:function () {
+            var guid = this.getLocalStorageValue('userinfo').guid;
+            if(!guid){
+              this.$messagebox('温馨提示', '登录状态无效了，请重新登录！').then(action => {
+                this.$router.push('/login');
+              });
+              return;
+            }
             var vueMdl = this;
             var eval_queryInfo = vueMdl.eval_queryInfo;
             var _date=new Date(eval_queryInfo.PlanStartDate);
@@ -267,50 +302,61 @@
               userID:eval_queryInfo.UserId,
               departmentID: eval_queryInfo.DepartmentId,
               createYear: createYear,
-              guid:this.getGuid()
+              guid:guid
             }
             var url = 'exit/getExitCourseInfoByID';
-            this.$httpPost(url, params, function (err,data) {
-              var status = data.status;
-              if (status == 200) {
-                  var _attendData=data.data.data
-                if(_attendData.length>0){
-                      var attendJson=_attendData[0]
-                  if(attendJson.IsFullAttendance==='0'){
-                    vueMdl.isFullAttend='是';
-                  }else{
-                    vueMdl.isFullAttend=attendJson.IsFullAttendance;
-                  }
-                  vueMdl.affairLeave=attendJson.PersonalLeave;
-                  vueMdl.sickLeave=attendJson.SickLeave;
-                  vueMdl.sabbaticalLeave=attendJson.SabbaticalLeave;
-                  vueMdl.late=attendJson.Late;
-                  vueMdl.absentWork=attendJson.Absenteeism;
+            this.$httpPost(url, params, function (err,json) {
+              if(json.data.data.length>=1){
+                var attendJson=json.data.data[0];
+                if(attendJson.IsFullAttendance==='0'){
+                  vueMdl.isFullAttend='是';
                 }else{
-                  vueMdl.isFullAttend=1;
+                  vueMdl.isFullAttend=attendJson.IsFullAttendance;
+                }
+                vueMdl.affairLeave=attendJson.PersonalLeave;
+                vueMdl.sickLeave=attendJson.SickLeave;
+                vueMdl.sabbaticalLeave=attendJson.SabbaticalLeave;
+                vueMdl.late=attendJson.Late;
+                vueMdl.absentWork=attendJson.Absenteeism;
+                vueMdl.medicineJson =(attendJson.MedicalEthics==='')?G_MedicalEthicsData:JSON.parse(attendJson.MedicalEthics);
+              }else{//没有从数据库中获取数据
+                //上次操作的缓存数据
+                var attendInfo = window.localStorage.getItem(vueMdl.eval_queryInfo.UserId+'_attendInfo');
+                if(attendInfo){
+                  vueMdl.attendInfo=JSON.parse(attendInfo);
+                  vueMdl.isFullAttend=vueMdl.attendInfo.isFullAttend;
+                  vueMdl.affairLeave=vueMdl.attendInfo.affairLeave;
+                  vueMdl.sickLeave=vueMdl.attendInfo.sickLeave;
+                  vueMdl.sabbaticalLeave=vueMdl.attendInfo.sabbaticalLeave;
+                  vueMdl.late=vueMdl.attendInfo.late;
+                  vueMdl.absentWork=vueMdl.attendInfo.absentWork;
+                  vueMdl.medicineJson = vueMdl.attendInfo.medicineJson;
+                }else{
+                  vueMdl.isFullAttend='是';
                   vueMdl.affairLeave=0;
                   vueMdl.sickLeave=0;
                   vueMdl.sabbaticalLeave=0;
                   vueMdl.late=0;
                   vueMdl.absentWork=0;
+                  vueMdl.medicineJson = G_MedicalEthicsData;
                 }
-
-              } else if (status === 201) {
-
-              } else {
-
               }
-            }, 'json')
+            }, 'json');
           },
           //医德医风选项的选择弹窗
-          optionClick:function(opitons){
-            this.slots = [{  
+          optionClick:function(opitons,pIndex,index){
+            this.slots = [{
               flex: 1,
-              values: opitons,  
-              className: 'slot',  
-              textAlign: 'center'
+              values: opitons,
+              className: 'slot',
+              textAlign: 'center',
+              defaultIndex: 0,
+              value: -1
             }];
+            
             this.popupVisiblePicker=true;
+            this.itemId = pIndex;
+            this.optionId = index;
           },
           //页面头部返回事件控制
           backClick:function(){
@@ -319,18 +365,43 @@
               path:'/teacher_index/teacher_exit/',
               name:'',
               query:{
-                planDataIndex:this.$route.query.planDataIndex,
-                checkExitType:this.$route.query.checkExitType  //查看出科情况类型：teacher为教师查看，为空则是学生查看
+                planDataIndex:this.$route.query.planDataIndex
+                // checkExitType:this.$route.query.checkExitType  //查看出科情况类型：teacher为教师查看，为空则是学生查看
               }
             });
           },
-          //关闭日期控件弹窗
-          cancelHide:function(){
+          //关闭选择控件弹窗
+          cancelHide:function(type){
+            if (type=='cancel') {
+              //this.medicineJson[this.itemId].ItemList[this.optionId].OptionValue = '';
+            }else{
+              //当点击弹窗，有默认选中，直接点击确定时，取用默认值
+              if (!this.slotsValue) {
+                this.slotsValue = this.slots[0].values[0];
+              };
+              this.medicineJson[this.itemId].ItemList[this.optionId].OptionValue = this.slotsValue;
+            }
             this.popupVisiblePicker=false;
           },
-          //选择日期的改变事件
+          //选择医德医风操作项的改变事件
           onValuesChange: function (picker, values) {
-            //this.planStartDate = values[0];
+            this.slotsValue = values[0];
+            /*if (values[0]) {
+              this.medicineJson[this.itemId].ItemList[this.optionId].OptionValue = values[0];
+            }else{
+              this.medicineJson[this.itemId].ItemList[this.optionId].OptionValue = '';
+            }*/
+          },
+          //录入医德医风数值的监控事件
+          onValuesInput:function(evt){
+            var value = evt.target.value.trim();
+            var pIndex = evt.target.lang.split('-')[0];
+            var index = evt.target.lang.split('-')[1];
+            if (value.length >= 1) {
+              this.medicineJson[pIndex].ItemList[index].OptionValue = value;
+            }else{
+              this.medicineJson[pIndex].ItemList[index].OptionValue = '';
+            }
           }
         }
     }
@@ -398,7 +469,7 @@
   .attend-wrap .panel{float:left;background:#fff;width:100%;border-radius:6px;}
 
 /*医德医风*/
-table{width:100%;}
+table{width:98%;margin:0px auto;}
   table,th,td{
     position: relative;
     border-spacing: 0;
@@ -409,10 +480,12 @@ table{width:100%;}
     border-bottom: 1px solid #ddd;
     }
   td{height:45px;}
-  table td:nth-child(1){  
+  table td:nth-child(1){
     font-weight:bold;
     text-align: center;
   }
   .td{font-weight:bold;text-align: center; border-left: 1px solid #ddd;}
   .more-icn{position:absolute;right:15px;bottom:10px;width:17px;height:28px;background:url('../assets/right.png') 0 10px no-repeat;background-size: 9px;}
+  .td-font{width: 100px;}
+  .td-font2{width:100px;padding-right: 3px;}
 </style>

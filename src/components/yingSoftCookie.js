@@ -1,8 +1,8 @@
 /**
  * Created by Administrator on 2017/12/7.
  */
-export default{
-  install(Vue){
+export default {
+  install(Vue) {
 
     Vue.prototype.setGuid = function (guid) {
       setCookie('GUID', guid);
@@ -20,7 +20,7 @@ export default{
       return JSON.parse(localStorage.getItem(name));
     }
 
-    Vue.prototype.setcookie = function (name,value) {
+    Vue.prototype.setcookie = function (name, value) {
       setCookie(name, value);
     }
 
@@ -28,8 +28,17 @@ export default{
       return getCookie(name);
     }
 
-    Vue.prototype.$formatDate=function(date, fmt) {
-      var padLeftZero=function(str) {
+    Vue.prototype.$getLastDay = function (year, month) {
+      var dt = new Date(year, month - 1, '01');
+      dt.setDate(1);
+      dt.setMonth(dt.getMonth() + 1);
+      var cdt = new Date(dt.getTime() - 1000 * 60 * 60 * 24);
+      return cdt.getDate();
+      //alert(cdt.getFullYear()+"年"+(Number(cdt.getMonth())+1)+"月月末日期:"+cdt.getDate()+"日");     
+    }
+
+    Vue.prototype.$formatDate = function (date, fmt) {
+      var padLeftZero = function (str) {
         return ('00' + str).substr(str.length);
       }
       if (/(y+)/.test(fmt)) {
@@ -73,24 +82,24 @@ export default{
      修改记录：无
      审查人：无
      *******************************************************************************/
-      var setCookie = function (name, value, isSetTime) {
+    var setCookie = function (name, value, isSetTime) {
       if (isSetTime === undefined || isSetTime === true) {
         var day = 30;//默认cookie保存30天
         var date = new Date();
         date.setTime(date.getTime() + Number(day) * 24 * 60 * 60 * 1000);
         //document.cookie = name + "=" + escape(value) + ";domain=ksbao.com;path=/;expires = " + date.toGMTString();
         document.cookie = name + "=" + escape(value) + ";path=/;expires = " + date.toGMTString();
-      }else {
+      } else {
         //document.cookie = name + "=" + escape(value) + ";domain=ksbao.com;path=/";
         document.cookie = name + "=" + escape(value) + ";path=/";
       }
     }
 
-    Vue.prototype.encodeHtml = function(s){
+    Vue.prototype.encodeHtml = function (s) {
       var REGX_HTML_ENCODE = /"|&|'|<|>|[\x00-\x20]|[\x7F-\xFF]|[\u0100-\u2700]/g;
       return (typeof s != "string") ? s :
         s.replace(REGX_HTML_ENCODE,
-          function($0){
+          function ($0) {
             var c = $0.charCodeAt(0), r = ["&#"];
             c = (c == 0x20) ? 0xA0 : c;
             r.push(c); r.push(";");
@@ -98,28 +107,28 @@ export default{
           });
     };
 
-    Vue.prototype.decodeHtml = function(s){
+    Vue.prototype.decodeHtml = function (s) {
       var REGX_HTML_DECODE = /&\w+;|&#(\d+);/g;
       var HTML_DECODE = {
-        "<"  : "<",
-        ">"  : ">",
-        "&" : "&",
+        "<": "<",
+        ">": ">",
+        "&": "&",
         " ": " ",
         '"': "\"",
         "©": "©",
         "'": "'",
         "/": '/'
-      // Add more
-    };
+        // Add more
+      };
       return (typeof s != "string") ? s :
         s.replace(REGX_HTML_DECODE,
-          function($0,$1){
+          function ($0, $1) {
             var c = HTML_DECODE[$0]; // 尝试查表
-            if(c === undefined){
+            if (c === undefined) {
               // Maybe is Entity Number
-              if(!isNaN($1)){
+              if (!isNaN($1)) {
                 c = String.fromCharCode(($1 == 160) ? 32 : $1);
-              }else{
+              } else {
                 // Not Entity Number
                 c = $0;
               }

@@ -20,7 +20,7 @@
       name: '',
       data() {
         return {
-          guid: this.getGuid(),
+          guid: this.getLocalStorageValue('userinfo').guid,
           planData: []
         }
       },
@@ -100,7 +100,7 @@
       },
       activated(){
         this.$store.commit('updataindexSelected','rotate_plan');
-        this.guid = this.getGuid();
+        this.guid = this.getLocalStorageValue('userinfo').guid;
         document.body.scrollTop=0;
         document.documentElement.scrollTop=0;
         that.planData=this.$store.state.planData;

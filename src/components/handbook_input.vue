@@ -63,7 +63,7 @@
       },
       components: {},
       activated(){
-        this.guid = this.getGuid();
+        this.guid = this.getLocalStorageValue('userinfo').guid;
         type = this.$route.query.type;
         this.departmentName = this.$route.query.departmentName;
         this.handbooktable = this.$store.state.handbooktable;

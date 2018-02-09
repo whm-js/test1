@@ -14,6 +14,12 @@
         <mt-cell title="是否具有处方权">{{userinfoData.IsPrescriptionRight?'有':'无'}}</mt-cell>
         <mt-cell title="是否执业医师" style="background-image: none;">{{userinfoData.IsPracticingPhysician?'是':'否'}}</mt-cell>
       </div>
+      <div style="margin:auto 8px;" v-else-if="role=='科室负责人'">
+        <mt-cell title="角色">{{userinfoData.UserRole}}</mt-cell>
+        <mt-cell title="所在科室">{{userinfoData.DepartmentName}}</mt-cell>
+        <mt-cell title="职务">{{userinfoData.PositionName?userinfoData.PositionName:'-'}}</mt-cell>
+        <mt-cell title="专业技术职称" style="background-image: none;">{{userinfoData.TitleName?userinfoData.TitleName:'-'}}</mt-cell>
+      </div>
       <div style="margin:auto 8px;" v-else>
         <mt-cell title="角色">{{userinfoData.UserRole}}</mt-cell>
         <mt-cell title="所在科室">{{userinfoData.DepartmentName}}</mt-cell>
@@ -21,7 +27,12 @@
         <mt-cell title="师资证级别">{{userinfoData.TeacherLCElevel?userinfoData.TeacherLCElevel:'-'}}</mt-cell>
         <mt-cell title="是否为我院全科专业带教老师">{{userinfoData.isGeneralTeacher?'是':'否'}}</mt-cell>
         <mt-cell title="是否取得全科师资证书">{{userinfoData.ishasGeneralLCE?'是':'否'}}</mt-cell>
-        <mt-cell title="专业技术职称" style="background-image: none;">{{userinfoData.TitleName}}</mt-cell>
+        <mt-cell title="专业技术职称" style="background-image: none;">{{userinfoData.TitleName?userinfoData.TitleName:'-'}}</mt-cell>
+        <div v-if="role==='基地导师'">
+          <mt-cell title="是否为住培导师">{{userinfoData.isResident?'是':'否'}}</mt-cell>
+          <mt-cell title="是否为住培考官">{{userinfoData.isOfficer?'是':'否'}}</mt-cell>
+          <mt-cell title="是否取得住培考官证书">{{userinfoData.isHasOfficerLCE?'是':'否'}}</mt-cell>
+        </div>
       </div>
   
     </div>
@@ -41,7 +52,7 @@
       </mt-cell>
     </div>
   
-    <div id="btndiv" style="margin-top:20px;">
+    <div id="btndiv" style="margin-top:20px;margin-bottom: 60px;">
       <mt-button type="default" class="btntype" @click.native="updatePWD">修改密码</mt-button>
       <mt-button type="default" class="btntype" @click.native="outlogin" style="float:right;">退出账号</mt-button>
     </div>
@@ -52,27 +63,27 @@
 
 <script>
   import store from '@/store/store'
+  // import { getUserInfo } from "@/service/getData";
   import {
     mapState,
     mapMutations,
     mapGetters
   } from 'vuex';
-  import {
-    MessageBox
-  } from 'mint-ui';
   export default {
     name: '',
-    created() {},
+    created() {
+    },
     activated() {
       this.$store.commit('updataindexSelected', 'userinfo');
       this.$store.commit('updatateacher_indexSelected', 'teacher_userinfo');
+      this.$store.commit('updatasecretary_indexSelected','secretary_userinfo');
       //避免因为滑动，页面不显示在最顶部
       document.body.scrollTop = 0;
       document.documentElement.scrollTop = 0;
   
       this.role = this.getLocalStorageValue('userinfo').role; //获取用户角色
-      if (this.guid !== this.getGuid() || this.userinfoData === '') {
-        this.guid = this.getGuid();
+      if (this.guid !== this.getLocalStorageValue('userinfo').guid || this.userinfoData === '') {
+        this.guid = this.getLocalStorageValue('userinfo').guid;
         //刷新／激活数据写在此处,每次打开页面请求最新的数据
         this.getUserInfo();
       }
@@ -96,7 +107,7 @@
       getUserInfo() {
         var that = this;
         if (!that.guid) {
-          MessageBox('温馨提示', '登录状态无效，请重新登录！').then(action => {
+          this.$messagebox('温馨提示', '登录状态无效，请重新登录！').then(action => {
             this.$router.push('/login');
           });
           return;
@@ -106,6 +117,9 @@
           guid: that.guid,
           userrole: ''
         }
+        // getUserInfo(0,that.guid,'').then(res=>{
+        //   console.log(res)
+        // })
   
         this.$httpGet('info/getUserinfobyrole', parems, function(err, json) {
           if (json.status == 200) {
@@ -118,7 +132,7 @@
             }
   
           } else {
-            MessageBox({
+            this.$messagebox({
               title: '提示',
               message: json.msg,
               showCancelButton: true
@@ -155,7 +169,7 @@
   }
   
   .userinfo {
-    height: 800px;
+    height: auto;
     width: 98%;
     margin: 0 auto;
     margin-bottom: 50px;

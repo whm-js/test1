@@ -9,6 +9,7 @@ const state = {
   count:1,
   indexSelected:'',
   teacher_indexSelected:'',
+  secretary_indexSelected:'',
   isSelect:-1,
   reloadMainpage:'',
   UserID:'007',
@@ -33,6 +34,9 @@ const mutations={
   },
   updatateacher_indexSelected(state,indexSelected){
     state.teacher_indexSelected=indexSelected;
+  },
+  updatasecretary_indexSelected(state,indexSelected){
+    state.secretary_indexSelected=indexSelected;
   },
   updatareloadMainpage(state,reloadMainpage){
     state.reloadMainpage=reloadMainpage;
@@ -75,6 +79,9 @@ const getters = {
   },
   teacher_indexSelected:function (state) {
     return state.teacher_indexSelected;
+  },
+  secretary_indexSelected:function (state) {
+    return state.secretary_indexSelected;
   },
   reloadMainpage:function (state) {
     return state.reloadMainpage;
