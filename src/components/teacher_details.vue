@@ -183,7 +183,6 @@ export default {
           break;
 
       }
-      console.log(parems);
       this.$httpPost("coachingDetail/getCoachingDetail", parems, function(err,json) {
         if (json.status == 200) {
             if(json.data.count>0){

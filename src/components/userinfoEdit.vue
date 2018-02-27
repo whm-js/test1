@@ -83,7 +83,7 @@
             <mt-popup v-model="popupVisible" position="bottom" style="width:100%;">
                 <div class="picker-toolbar">
                     <span class="mint-datetime-action mint-datetime-cancel" @click="cancelHide">取消</span>
-                    <span class="mint-datetime-action mint-datetime-confirm" @click="cancelHide">确定</span>
+                    <span class="mint-datetime-action mint-datetime-confirm" @click="oktype">确定</span>
                 </div>
                 <mt-picker :slots="nationJson" @change="onValuesChange"></mt-picker>
             </mt-popup>
@@ -110,7 +110,7 @@ export default {
       this.getPositionList();
       this.getTitleList();
     }
-    
+
   },
   data() {
     return {
@@ -119,6 +119,7 @@ export default {
       userinfoData: {},
       userinfoData_once: {},
       popupVisible: false,
+      Picker:'',
       poputype: 1, //默认1为民族，2为政治面貌，3为学历类型，4为年份，5为职务，6为专业技术职称
       maxlength: 20,
       nationJson: [
@@ -190,8 +191,14 @@ export default {
       startDate: new Date("1930-01-01"),
       isFullAttend: 1,//性别点击
       pickerchangeValue: 1,
-      positionlist:[],
-      titleList:[],
+      positionlist:[],//职务
+      titleList:[],//专业技术职称
+      selectNation:'',//下拉选中的民族
+      selectPoliticalStatus:'',//下拉选中的政治面貌
+      selectEducationType:'',//下拉选中的学历类型
+      selectGraduatedYear:'',//下拉选中的毕业年份
+      selectPositionName:'',//下拉选中的职务
+      selectTitleName:'',//下拉选中的专业技术职称
     };
   },
   methods: {
@@ -386,24 +393,30 @@ export default {
     },
     //监听下拉选中的值
     onValuesChange(picker, values) {
+      this.Picker=picker;
       if (values[0] > values[1]) {
         picker.setSlotValue(1, values[0]);
       }
       switch (this.poputype){
         case 1:
-          this.userinfoData.Nation = values[0];
+          // this.userinfoData.Nation = values[0];
+          this.selectNation = values[0];
           break;
         case 2:
-          this.userinfoData.PoliticalStatus = values[0];
+          // this.userinfoData.PoliticalStatus = values[0];
+          this.selectPoliticalStatus = values[0];
           break;
         case 3:
-          this.userinfoData.EducationType = values[0];
+          // this.userinfoData.EducationType = values[0];
+          this.selectEducationType = values[0];
           break;
         case 4:
-          this.userinfoData.GraduatedYear = values[0];
+          // this.userinfoData.GraduatedYear = values[0];
+          this.selectGraduatedYear = values[0];
           break;
         case 5:
-          this.userinfoData.PositionName=values[0];
+          // this.userinfoData.PositionName=values[0];
+          this.selectPositionName = values[0];
           for(var i in this.positionlist){
             if(values[0]==this.positionlist[i].PositionName){
               this.userinfoData.PositionID=this.positionlist[i].PositionID;
@@ -411,7 +424,8 @@ export default {
           }
           break;
         case 6:
-          this.userinfoData.TitleName=values[0];
+          // this.userinfoData.TitleName=values[0];
+          this.selectTitleName = values[0];
           for(var i in this.titleList){
             if(values[0]==this.titleList[i].TitleName){
               this.userinfoData.TitleID=this.titleList[i].TitleID;
@@ -427,7 +441,7 @@ export default {
       //显示下拉框
       switch(value){
         case 1:
-        this.nationJson[0].value=this.userinfoData.Nation;
+          this.nationJson[0].value=this.userinfoData.Nation;
           this.nationJson[0].values = ["汉族","蒙古族","回族","藏族","维吾尔族","苗族","彝族","壮族","布依族","朝鲜族","满族","侗族","瑶族","白族","土家族",
           "哈尼族","哈萨克族","傣族","黎族","傈僳族","佤族","畲族","高山族","拉祜族","水族","东乡族","纳西族","景颇族","柯尔克孜族","土族","达斡尔族","仫佬族","羌族",
           "布朗族","撒拉族","毛南族","仡佬族","锡伯族","阿昌族","普米族","塔吉克族","怒族","乌孜别克族","俄罗斯族","鄂温克族","德昂族","保安族","裕固族","京族","塔塔尔族",
@@ -559,8 +573,83 @@ export default {
       }
       this.$refs[picker].open();
     },
+    //点击确定
+    oktype() {
+      switch (this.poputype){
+        case 1:
+          this.userinfoData.Nation = this.selectNation;
+          break;
+        case 2:
+          this.userinfoData.PoliticalStatus = this.selectPoliticalStatus;
+          break;
+        case 3:
+          this.userinfoData.EducationType = this.selectEducationType;
+          break;
+        case 4:
+          this.userinfoData.GraduatedYear = this.selectGraduatedYear;
+          break;
+        case 5:
+          this.userinfoData.PositionName = this.selectPositionName;
+          break;
+        case 6:
+          this.userinfoData.TitleName = this.selectTitleName;
+          break;
+      }
+      this.popupVisible = false;
+    },
+    //点击取消
     cancelHide() {
-      //隐藏下拉选项
+      //隐藏下拉选项,默认设置第一项为选中项
+      switch (this.poputype){
+        case 1:
+          // this.userinfoData.Nation = this.selectNation;
+          if(this.userinfoData.Nation.length>1 || this.userinfoData.Nation !='null' || this.userinfoData.Nation !=undefined){
+            this.Picker.setSlotValue(0, this.userinfoData.Nation);
+          }else{
+            this.Picker.setSlotValue(0, this.nationJson[0].values[0]);
+          }
+          break;
+        case 2:
+          // this.userinfoData.PoliticalStatus = this.selectPoliticalStatus;
+          if(this.userinfoData.PoliticalStatus.length>1 || this.userinfoData.PoliticalStatus !='null' || this.userinfoData.PoliticalStatus !=undefined){
+            this.Picker.setSlotValue(0, this.userinfoData.PoliticalStatus);
+          }else{
+            this.Picker.setSlotValue(0, this.nationJson[0].values[0]);
+          }
+          break;
+        case 3:
+          // this.userinfoData.EducationType = this.selectEducationType;
+          if(this.userinfoData.PoliticalStatus.length>1 || this.userinfoData.PoliticalStatus !='null' || this.userinfoData.PoliticalStatus !=undefined){
+            this.Picker.setSlotValue(0, this.userinfoData.PoliticalStatus);
+          }else{
+            this.Picker.setSlotValue(0, this.nationJson[0].values[0]);
+          }
+          break;
+        case 4:
+          // this.userinfoData.GraduatedYear = this.selectGraduatedYear;
+          if(this.userinfoData.GraduatedYear.length>1 || this.userinfoData.GraduatedYear !='null' || this.userinfoData.GraduatedYear !=undefined){
+            this.Picker.setSlotValue(0, this.userinfoData.GraduatedYear);
+          }else{
+            this.Picker.setSlotValue(0, this.nationJson[0].values[0]);
+          }
+          break;
+        case 5:
+          // this.userinfoData.PositionName = this.selectPositionName;
+          if(this.userinfoData.PositionName.length>1 || this.userinfoData.PositionName !='null' || this.userinfoData.PositionName !=undefined){
+            this.Picker.setSlotValue(0, this.userinfoData.PositionName);
+          }else{
+            this.Picker.setSlotValue(0, this.nationJson[0].values[0]);
+          }
+          break;
+        case 6:
+          // this.userinfoData.TitleName = this.selectTitleName;
+          if(this.userinfoData.TitleName.length>1 || this.userinfoData.TitleName !='null' || this.userinfoData.TitleName !=undefined){
+            this.Picker.setSlotValue(0, this.userinfoData.TitleName);
+          }else{
+            this.Picker.setSlotValue(0, this.nationJson[0].values[0]);
+          }
+          break;
+      }
       this.popupVisible = false;
     },
     //剔除掉html字符

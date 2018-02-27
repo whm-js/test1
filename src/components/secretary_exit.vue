@@ -25,7 +25,7 @@
 
       <li id="tabTitle1" v-bind:class="{active:tabtag==='tabContent1'}" v-on:click="tabClick(1,'0,1,2,100,101')">其它</li>
 
-      <li id="tabTitle2" v-bind:class="{active:tabtag==='tabContent2'}" v-on:click="tabClick(2,'102')">待审核</li>
+      <li id="tabTitle2" v-bind:class="{active:tabtag==='tabContent2'}" v-on:click="tabClick(2,'102,114')">待审核</li>
 
       <li id="tabTitle3" v-bind:class="{active:tabtag==='tabContent3'}" v-on:click="tabClick(3,'200')">已出科</li>
 
@@ -319,13 +319,13 @@ export default {
         this.rotateStatus = "0,1,2,100,101";
         break;
       case "2": //待写评语
-        this.rotateStatus = 102;
+        this.rotateStatus = '102,114';
         break;
       case "3": //已出科
         this.rotateStatus = 200;
         break;
       default:
-        this.rotateStatus = 102;
+        this.rotateStatus = '102,114';
         this.checkExitType = "secretary_2";
         this.tabtag = "tabContent2";
         break;
@@ -361,7 +361,7 @@ export default {
           this.tabClick(index, this.rotateStatus);
           break;
         case "2": //待写评语
-          this.rotateStatus = 102;
+          this.rotateStatus = '102,114';
           this.tabClick(index, this.rotateStatus);
           this.checkExitType = "secretary_" + index;
           this.tabtag = "tabContent" + index;
@@ -374,7 +374,7 @@ export default {
           this.tabClick(index, this.rotateStatus);
           break;
         default:
-          this.rotateStatus = 102;
+          this.rotateStatus = '102,114';
           this.checkExitType = "secretary_2";
           this.tabtag = "tabContent2";
           this.tabClick(2, this.rotateStatus);
@@ -385,7 +385,7 @@ export default {
       this.guid = this.getLocalStorageValue("userinfo").guid;
 
       this.tabtag = "tabContent2";
-      this.rotateStatus = 102;
+      this.rotateStatus = '102,114';
       //设置当前出科时间
       var Year = new Date().getFullYear();
       var Month = new Date().getMonth() + 1;

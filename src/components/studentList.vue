@@ -41,7 +41,7 @@
           <div v-if="fromType==='secretary_exit'" style="float:right;font-size: 16px;margin-right: 10px;font-weight: bold;">{{showRotateStatus(item.RotateStatus)}}</div>
           <div v-if="item.RotateStatus==101&&fromType==='teacher_exit'" class="btn btnBlue" style="float:right;" v-on:click="writeComments(item,'add')">填写评语</div>
           <div v-if="item.RotateStatus==102&&fromType==='teacher_exit'" class="btn" style="float:right;" v-on:click="writeComments(item,'edit')">查看评语</div>
-          <div v-if="item.RotateStatus=='102'&&fromType==='secretary_exit'" class="btn btnBlue" style="float:right;" v-on:click="examineExitInfo(item)">审核出科</div>
+          <div v-if="(item.RotateStatus=='102'||item.RotateStatus=='114')&&fromType==='secretary_exit'" class="btn btnBlue" style="float:right;" v-on:click="examineExitInfo(item)">{{item.RotateStatus=='114'?'重新审核':'审核出科'}}</div>
           <div v-if="item.RotateStatus=='200'&&(fromType==='teacher_exit'||fromType==='secretary_exit')" class="btn btnBlue" style="float:right;" v-on:click="checkExitInfo(item)">出科情况</div>
 
         </div>

@@ -75,55 +75,68 @@ export default {
       //   console.log(res)
       // })
 
-      this.$httpPost('login', params, function(err, data) {
+      this.$httpPost("login", params, function(err, data) {
         if (err) {
-          return
+          return;
         }
         //只有学员才能登陆
         switch (data.data.code) {
           case 0:
-            self.setGuid(data.data.guid)
-            self.setLocalStorageValue('userinfo', data.data);
-            self.$store.commit('updataguid', data.data.guid);
+            self.setGuid(data.data.guid);
+            self.setLocalStorageValue("userinfo", data.data);
+            self.$store.commit("updataguid", data.data.guid);
             //登录成功只有学员账号才能登陆
             if (data.data.role === "学员") {
-
-              self.$router.push('/index/rotate_department/');
-            }else if(data.data.role === "基地导师"||data.data.role === "带教老师"){
-              self.$router.push('/teacher_index');
-            }
-             else {
+              self.$router.push("/index/rotate_department/");
+            } else if (
+              data.data.role === "基地导师" ||
+              data.data.role === "带教老师"
+            ) {
+              self.$router.push("/teacher_index");
+            } else if (
+              data.data.role === "教学秘书" ||
+              data.data.role === "科室负责人"
+            ) {
+              self.$router.push("/secretary_index");
+            } else {
               //提示未开发
-              if (location.hostname == 'newtest.ksbao.com' || location.hostname == 'localhost') {
-                if (data.data.role === "基地导师"||data.data.role === "带教老师") {
-
-                  self.$router.push('/teacher_index');
-                } else if (data.data.role === "教学秘书"||data.data.role === "科室负责人") {
-
-                  self.$router.push('/secretary_index');
-                }else{
+              if (
+                location.hostname == "newtest.ksbao.com" ||
+                location.hostname == "localhost"
+              ) {
+                if (
+                  data.data.role === "基地导师" ||
+                  data.data.role === "带教老师"
+                ) {
+                  self.$router.push("/teacher_index");
+                } else if (
+                  data.data.role === "教学秘书" ||
+                  data.data.role === "科室负责人"
+                ) {
+                  self.$router.push("/secretary_index");
+                } else {
                   self.$messagebox({
-                  title: '提示',
-                  message: `正在开发中，敬请期待...`,
-                });
+                    title: "提示",
+                    message: `正在开发中，敬请期待...`
+                  });
                 }
               } else {
                 self.$messagebox({
-                  title: '提示',
-                  message: `正在开发中，敬请期待...`,
+                  title: "提示",
+                  message: `正在开发中，敬请期待...`
                 });
               }
             }
-            break
+            break;
           case 1:
             //账号密码错误
             self.$messagebox({
-              title: '提示',
-              message: data.msg,
+              title: "提示",
+              message: data.msg
             });
-            break
+            break;
         }
-      })
+      });
     },
     validateLogin: function(params) {
       if (params.username && params.password) {
