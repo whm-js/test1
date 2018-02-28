@@ -11,19 +11,21 @@
       <div>
         <div class="summary-panel">
           <h4 class="summary-title">个人小结：</h4>
-          <div class="summary-text" v-if="this.$store.state.UserExitData.PersonalSummary">
+          <div class="summary-text" v-if="!this.$store.state.UserExitData">-</div>
+          <div class="summary-text" v-else-if="this.$store.state.UserExitData.PersonalSummary">
             {{this.$store.state.UserExitData.PersonalSummary}}
           </div>
-          <div class="summary-text" v-else>{{this.$store.state.UserExitData.PersonalSummary}}</div>
+          <div class="summary-text" v-else>-</div>
         </div>
 
         <br/>
         <div class="summary-panel">
           <h4 class="summary-title">带教老师评语：</h4>
-          <div class="summary-text" v-if="this.$store.state.UserExitData.TeacherComment">
+          <div class="summary-text" v-if="!this.$store.state.UserExitData">-</div>
+          <div class="summary-text" v-else-if="this.$store.state.UserExitData.TeacherComment">
             {{this.$store.state.UserExitData.TeacherComment}}
           </div>
-          <div class="summary-text" v-else>{{this.$store.state.UserExitData.TeacherComment}}</div>
+          <div class="summary-text" v-else>-</div>
         </div>
       </div>
       <div style="height:100px;"></div>

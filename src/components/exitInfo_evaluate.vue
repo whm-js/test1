@@ -11,7 +11,7 @@
 
       <div class="panel-title">
           <div class="panel-title-left">评价项目及考核指标</div>
-          <div class="panel-title-right">总分：{{SuggestionData.Score}}</div>
+          <div class="panel-title-right">总分：{{SuggestionData.Score ? SuggestionData.Score:'-'}}</div>
       </div>
       <!--如果库中存在评价json-->
       <template v-if="SuggestionData.Content"> 
@@ -38,7 +38,7 @@
               <li class="evaluate-item" v-for="data in item.ItemOptions">
                 <div class="evaluate-item-left">{{data.OptionName}}</div>
                 <div class="evaluate-item-right" v-if="data.SelectedGrade != -1">{{data.SelectedGrade}}分</div>
-                <div class="evaluate-item-right" v-else></div>
+                <div class="evaluate-item-right" v-else>-</div>
               </li>
             </ul>
           </div>
@@ -145,7 +145,11 @@
             var that = this;
             that.$httpPost('rotate/getSuggestion', params, function (err, json) {
               that.SuggestionData= json.data.data[0];
-              that.TeachingJsons = that.$route.query.checkExitType ? JSON.parse(that.SuggestionData.Content).EvaluationItems:JSON.parse(that.SuggestionData.Content).TeachingItems;
+              if (that.SuggestionData.Content) {
+                that.TeachingJsons = that.$route.query.checkExitType ? JSON.parse(that.SuggestionData.Content).EvaluationItems:JSON.parse(that.SuggestionData.Content).TeachingItems;
+              } else{
+                that.TeachingJsons = that.$route.query.checkExitType ? Evaluationdata.EvaluationItems:Teachingdata.TeachingItems;
+              };
             });
           },
           //返回上一个页面
