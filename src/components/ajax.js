@@ -31,6 +31,7 @@ export default {
         } else if (data.status == 201) {
           //登录失效
           if (data.msg === '登录状态失效，请重新登录。') {
+            // self.removeLocalStorageValue('userinfo');
             self.$router.push(go);
           } else {
             this.$messagebox({

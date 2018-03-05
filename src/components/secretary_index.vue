@@ -76,6 +76,13 @@ export default {
       this.selectedName = "入科管理";
     }
   },
+  beforeRouteEnter(to, from, next) {
+    var fromUrl = from.path;
+    console.log(fromUrl);
+    next(vm => {
+      // vm.fromUrl = from.path;
+    });
+  },
   activated() {
     var path = this.$route.path;
     if (path.indexOf("secretary_exit") > -1) {

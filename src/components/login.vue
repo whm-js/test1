@@ -2,28 +2,29 @@
   <div class="login">
 
     <div class="logo"></div>
-
-    <div class="row">
-      <div style="width:80%;margin:0px auto;border-bottom: 1px solid #ccc;">
-        <div style="float:left;width:40px;height:35px;padding-top:5px;">
-          <img class='tipImage' src="../assets/username.png" style="" />
+    <div class="main">
+      <div class="row">
+        <div style="width:80%;margin:0px auto;border-bottom: 1px solid #ccc;">
+          <div style="float:left;width:40px;height:35px;padding-top:5px;">
+            <img class='tipImage' src="../assets/username.png" style="" />
+          </div>
+          <mt-field placeholder="请输入账号" type="username" v-model="username"></mt-field>
         </div>
-        <mt-field placeholder="请输入账号" type="username" v-model="username"></mt-field>
       </div>
-    </div>
 
-    <div class="row">
-      <div style="width:80%;margin:0px auto;border-bottom: 1px solid #ccc;">
-        <div style="float:left;width:40px;height:35px;padding-top:3px;">
-          <img class='tipImage' src="../assets/password.png" style="" />
+      <div class="row">
+        <div style="width:80%;margin:0px auto;border-bottom: 1px solid #ccc;">
+          <div style="float:left;width:40px;height:35px;padding-top:3px;">
+            <img class='tipImage' src="../assets/password.png" style="" />
+          </div>
+          <mt-field placeholder="请输入密码" type="password" v-model="password"></mt-field>
         </div>
-        <mt-field placeholder="请输入密码" type="password" v-model="password"></mt-field>
       </div>
-    </div>
 
-    <div class="row" style="width: 100%;padding-top: 5%">
-      <mt-button style="width:80%;height:50px;line-height:50px;background:#38ACD3;" type="primary" v-on:click="login">登录</mt-button>
-    </div>
+      <div class="row" style="width: 100%;padding-top: 5%">
+        <mt-button style="width:80%;height:50px;line-height:50px;background:#38ACD3;" type="primary" v-on:click="login">登录</mt-button>
+      </div>
+   </div>
 
   </div>
 </template>
@@ -32,7 +33,7 @@
 import { Indicator } from "mint-ui";
 import store from "@/store/store";
 import { mapState, mapMutations, mapGetters } from "vuex";
-// import { userLogin,getUserInfo } from "@/service/getData";
+import { userLogin,getUserInfo } from "@/service/getData";
 export default {
   name: "Vue",
   data() {
@@ -174,13 +175,27 @@ body {
 body {
   margin: 0px !important;
 }
-
+.login{
+  width: 100%;
+  height: auto;
+}
 .login .logo {
+  z-index: 9;
+  position: relative;
+  top: 0px;
+  left: 0px;
   width: 100%;
   height: 280px;
-  background: url(../assets/loginImg.png);
-  background-size: 100%;
-  background-repeat: no-repeat;
+  background: url(../assets/loginImg.png) no-repeat;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+.login .main{
+  position: relative;
+  top: 0px;
+  left: 0px;
+  width: 100%;
 }
 
 .login .mint-cell-wrapper {

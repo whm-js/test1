@@ -3,7 +3,7 @@ https://zhuanlan.zhihu.com/p/21802181
 http://mint-ui.github.io/docs/#/zh-cn2
 
 1、安装nodejs 6.0
-2、npm install 安装完全部模块 babel-polyfill babel-preset-es2015
+2、npm install 安装完全部模块 babel-polyfill babel-preset-es2015 babel-plugin-component
 3、npm run dev 运行开发模式
 4、localhost:8081 谷歌浏览器打开看到程序界面
 5、内网接口调用 http://192.168.98.48:3000/info/getUserinfobyrole?userid=2613&userrole= 

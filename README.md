@@ -1,6 +1,6 @@
-# guipei_phone
+# gp
 
-> guipei
+> gp
 
 ## Build Setup
 

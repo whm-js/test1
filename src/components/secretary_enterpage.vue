@@ -173,7 +173,7 @@ export default {
   created() {
     that = this;
     this.guid = this.getLocalStorageValue('userinfo').guid;
-    
+    this.getDepartTeacher();
   },
   activated() {
     if (this.guid !== this.getLocalStorageValue('userinfo').guid) {

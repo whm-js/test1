@@ -70,7 +70,7 @@
       <!--医德医风-->
       <table id="medicine" style="margin-top:10px;">
         <thead>
-          <th colspan="3" style="height:45px;color:#37acd3;">医德医风</th>
+          <th colspan="3" style="height:45px;color:#37acd3;background-color:">医德医风</th>
         </thead>
         <tbody>
           <!--如果库中存在医德医风json-->
@@ -79,7 +79,7 @@
               <template v-if="item.ItemList.length==1">
                 <tr>
                   <td colspan="2">{{item.ItemName}}</td>
-                  <td style="width:98px;">{{item.OptionValue ? item.OptionValue : '-'}}</td>
+                  <td style="width:98px;">{{item.ItemList[0].OptionValue ? item.ItemList[0].OptionValue : '-'}}</td>
                 </tr>
               </template>
               <template v-else>

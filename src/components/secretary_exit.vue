@@ -259,23 +259,23 @@ export default {
           flex: 1,
 
           values: [
-            "1",
+            "01",
 
-            "2",
+            "02",
 
-            "3",
+            "03",
 
-            "4",
+            "04",
 
-            "5",
+            "05",
 
-            "6",
+            "06",
 
-            "7",
+            "07",
 
-            "8",
+            "08",
 
-            "9",
+            "09",
 
             "10",
 
@@ -334,6 +334,7 @@ export default {
     //设置当前出科时间
     var Year = new Date().getFullYear();
     var Month = new Date().getMonth() + 1;
+    Month=Month<10?"0"+Month:Month
     var date = new Date().getDate();
     date = date > 15 ? Month + "月底" : Month + "月15日";
 
@@ -344,9 +345,9 @@ export default {
 
   activated() {
     this.$store.commit("updatasecretary_indexSelected", "secretary_exit");
-    if (this.guid != this.getLocalStorageValue("userinfo").guid) {
-      this.guid = this.getLocalStorageValue("userinfo").guid;
-    }
+    // if (this.guid != this.getLocalStorageValue("userinfo").guid) {
+    //   this.guid = this.getLocalStorageValue("userinfo").guid;
+    // }
     this.role = this.getLocalStorageValue("userinfo").role;
 
     var type = this.$route.query.checkExitType;
@@ -389,6 +390,7 @@ export default {
       //设置当前出科时间
       var Year = new Date().getFullYear();
       var Month = new Date().getMonth() + 1;
+      Month=Month<10?"0"+Month:Month
       var date = new Date().getDate();
       date = date > 15 ? Month + "月底" : Month + "月15日";
 
@@ -562,7 +564,7 @@ body {
   border-right: 1px solid #ddd;
 }
 .secretary_exit .nav > li:nth-child(3) {
-  width: 33.38%;
+  width: 33.31%;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }

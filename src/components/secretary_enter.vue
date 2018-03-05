@@ -256,23 +256,23 @@ export default {
           flex: 1,
 
           values: [
-            "1",
+            "01",
 
-            "2",
+            "02",
 
-            "3",
+            "03",
 
-            "4",
+            "04",
 
-            "5",
+            "05",
 
-            "6",
+            "06",
 
-            "7",
+            "07",
 
-            "8",
+            "08",
 
-            "9",
+            "09",
 
             "10",
 
@@ -293,7 +293,7 @@ export default {
         {
           flex: 1,
 
-          values: ["1", "16"],
+          values: ["01", "16"],
 
           className: "slot3",
 
@@ -340,6 +340,7 @@ export default {
     //设置当前出科时间
     var Year = new Date().getFullYear();
     var Month = new Date().getMonth() + 1;
+    Month = Month < 10 ? "0" + Month : Month;
     var date = new Date().getDate();
     date = date > 15 ? Month + "月16日" : Month + "月01日";
 
@@ -350,9 +351,9 @@ export default {
 
   activated() {
     this.$store.commit("updatasecretary_indexSelected", "secretary_enter");
-    if (this.guid != this.getLocalStorageValue("userinfo").guid) {
-      this.guid = this.getLocalStorageValue("userinfo").guid;
-    }
+    // if (this.guid != this.getLocalStorageValue("userinfo").guid) {
+    //   this.guid = this.getLocalStorageValue("userinfo").guid;
+    // }
     this.role = this.getLocalStorageValue("userinfo").role;
 
     var type = this.$route.query.checkExitType;
@@ -395,6 +396,7 @@ export default {
       //设置当前出科时间
       var Year = new Date().getFullYear();
       var Month = new Date().getMonth() + 1;
+      Month = Month < 10 ? "0" + Month : Month;
       var date = new Date().getDate();
       date = date > 15 ? Month + "月16日" : Month + "月01日";
 
@@ -403,7 +405,6 @@ export default {
       this.getExitDataInfo();
     }
   },
-
   methods: {
     //tab页签单击事件
 
@@ -464,6 +465,9 @@ export default {
 
       var date = this.planStartDate;
 
+      // this.$messagebox(date).then(action => {
+      //   return;
+      // });
       // if (this.planStartDate.indexOf("月底") > -1) {
       //   date = this.planStartDate.replace(/底/, "16日");
       // } else {
@@ -475,8 +479,14 @@ export default {
       date = date.replace(/月/, "-");
 
       date = date.replace(/日/, "");
-
+      // this.$messagebox(date).then(action => {
+      //   return;
+      // });
       date = this.$formatDate(new Date(date), "yyyy-MM-dd");
+
+      // this.$messagebox(date).then(action => {
+      //   return;
+      // });
 
       var params = {
         guid: this.guid,
@@ -561,7 +571,7 @@ body {
   border-right: 1px solid #ddd;
 }
 .secretary_enter .nav > li:nth-child(3) {
-  width: 33.38%;
+  width: 33.31%;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }

@@ -63,7 +63,7 @@ export default {
   data() {
     return {
       role: "",
-      guid:'',
+      guid: "",
       ExitData: [], //出科数据列表
       tabtag: "tabContent2",
       popupVisible: false, //是否展示个人信息弹窗
@@ -90,15 +90,15 @@ export default {
         {
           flex: 1,
           values: [
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
+            "01",
+            "02",
+            "03",
+            "04",
+            "05",
+            "06",
+            "07",
+            "08",
+            "09",
             "10",
             "11",
             "12"
@@ -169,7 +169,7 @@ export default {
     },
     //获取学员个人信息
     showStudentInfo: function(studentID) {
-      var guid = this.getLocalStorageValue('userinfo').guid;
+      var guid = this.getLocalStorageValue("userinfo").guid;
       if (!guid) {
         this.$messagebox("温馨提示", "登录状态无效，请重新登录！").then(
           action => {
@@ -313,7 +313,7 @@ export default {
     switch (index) {
       case "1": //未申请出科
         this.rotateStatus = 100;
-        
+
         break;
       case "2": //待写评语
         this.rotateStatus = "101,102";
@@ -327,7 +327,6 @@ export default {
         this.tabtag = "tabContent2";
         break;
     }
-    
   },
   activated() {
     this.$store.commit("updatateacher_indexSelected", "teacher_exit");
@@ -339,17 +338,17 @@ export default {
         case "1": //未申请出科
           this.rotateStatus = 100;
           this.checkExitType = "teacher_" + index;
-        this.tabtag = "tabContent" + index;
+          this.tabtag = "tabContent" + index;
           break;
         case "2": //待写评语
           this.rotateStatus = "101,102";
           this.checkExitType = "teacher_" + index;
-        this.tabtag = "tabContent" + index;
+          this.tabtag = "tabContent" + index;
           break;
         case "3": //已出科
           this.rotateStatus = 200;
           this.checkExitType = "teacher_" + index;
-        this.tabtag = "tabContent" + index;
+          this.tabtag = "tabContent" + index;
           break;
         default:
           this.rotateStatus = "101,102";
@@ -358,20 +357,21 @@ export default {
           break;
       }
     }
-    if(this.guid!=this.getLocalStorageValue("userinfo").guid){
+    if (this.guid != this.getLocalStorageValue("userinfo").guid) {
       this.guid = this.getLocalStorageValue("userinfo").guid;
 
-      this.tabtag = 'tabContent2';
+      this.tabtag = "tabContent2";
       this.rotateStatus = "101,102";
-    //设置当前出科时间
-    var Year = new Date().getFullYear();
-    var Month = new Date().getMonth() + 1;
-    var date = new Date().getDate();
-    date = date > 15 ? Month + "月底" : Month + "月15日";
+      //设置当前出科时间
+      var Year = new Date().getFullYear();
+      var Month = new Date().getMonth() + 1;
+      Month = Month < 10 ? "0" + Month : Month;
+      var date = new Date().getDate();
+      date = date > 15 ? Month + "月底" : Month + "月15日";
 
-    this.planStartDate = Year + "年" + date;
-    //请求接口获取数据
-    this.getExitDataInfo();
+      this.planStartDate = Year + "年" + date;
+      //请求接口获取数据
+      this.getExitDataInfo();
     }
   }
 };
@@ -439,7 +439,7 @@ body {
   border-right: 1px solid #ddd;
 }
 .exit-manage .nav > li:nth-child(3) {
-  width: 33.38%;
+  width: 33.31%;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }

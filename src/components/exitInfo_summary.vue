@@ -31,7 +31,7 @@
       <div style="height:100px;"></div>
       <div class="exit-footer">
         <div v-if="isExit!=='true'" style="float:left;width:49%;border-right:1px solid #fff;" v-on:click="preStep()">上一项</div>
-        <div v-if="isExit!=='true'" style="float:left;width:50%;" v-on:click="nextStep()">返回轮转科室</div>
+        <div v-if="isExit!=='true'" style="float:left;width:50%;" v-on:click="nextStep()">{{role==='学员'?'返回轮转科室':'返回出科管理'}}</div>
         <div v-if="isExit==='true'" style="float:left;width:99%;" v-on:click="nextExitPage()">下一项</div>
       </div>
     </div>

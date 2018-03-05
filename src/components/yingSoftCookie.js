@@ -20,6 +20,10 @@ export default {
       return JSON.parse(localStorage.getItem(name));
     }
 
+      Vue.prototype.removeLocalStorageValue = function (name) {
+        localStorage.removeItem(name);
+    }
+
     Vue.prototype.setcookie = function (name, value) {
       setCookie(name, value);
     }
