@@ -15,3 +15,9 @@ export const getUserInfo = (userid,guid,userrole) => fetch('info/getUserinfobyro
     guid:guid,
     userrole:userrole
 });
+
+export const getDepartTeacherArr = (departmentID,guid,planStartDate) => fetch('entry/getDepartTeacher',{
+    departmentID:departmentID,
+    guid:guid,
+    planStartDate:planStartDate
+},'post');

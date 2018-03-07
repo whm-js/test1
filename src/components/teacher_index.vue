@@ -75,6 +75,11 @@ export default {
       this.selected = "exit_teacher";
       this.selectedName = "出科管理";
     }
+    this.$router.push({
+      path: "exit_teacher",
+      name: "exit_teacher",
+      query: { id: 1 }
+    });
   },
   activated() {
     var path = this.$route.path;

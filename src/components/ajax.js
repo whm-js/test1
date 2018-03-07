@@ -37,7 +37,7 @@ export default {
             this.$messagebox({
               title: '提示',
               message: data.msg,
-              closeOnClickModal:false
+              closeOnClickModal: false
             }).then(action => {
               self.$router.push(go);
             });
@@ -83,7 +83,7 @@ export default {
             this.$messagebox({
               title: '提示',
               message: data.msg,
-              closeOnClickModal:false
+              closeOnClickModal: false
             }).then(action => {
               self.$router.push(go);
             });
@@ -101,6 +101,7 @@ export default {
         callback(err);
       })
     }
+
   }
 }
 

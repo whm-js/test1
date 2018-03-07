@@ -34,6 +34,11 @@ import { Indicator } from "mint-ui";
 import store from "@/store/store";
 import { mapState, mapMutations, mapGetters } from "vuex";
 // import { userLogin,getUserInfo } from "@/service/getData";
+var searchUrl = window.location.href;
+var searchData = searchUrl.split("="); //截取 url中的“=”,获得“=”后面的参数
+var searchText = decodeURI(searchData[1]); //decodeURI解码
+var searchName = decodeURI(searchData[2]);
+var userpwd='';
 export default {
   name: "Vue",
   data() {
@@ -45,50 +50,38 @@ export default {
   },
   store,
   components: {},
-  created() {},
+  created() {
+    //第一次打开界面的时候，判断如果是苹果设备--封壳中传了参数pugongying，再次判断参数中是否包含账号密码，直接登录
+    if(searchText.indexOf('pugongying')>-1){
+        if(searchName.length>0 && searchName!='undefined'){
+          var userinfo=searchName.split(',');
+          this.username=userinfo[0];
+          userpwd=userinfo[1];
+          this.login();
+        }
+      }
+  },
   methods: {
     login: function() {
       var self = this;
-
-      var searchUrl = window.location.href;
-      var searchData = searchUrl.split("="); //截取 url中的“=”,获得“=”后面的参数
-      var searchText = decodeURI(searchData[1]); //decodeURI解码
-      var searchName = decodeURI(searchData[2]);
-      if(searchText.indexOf('pugongying')>-1){
-        if(searchName.length>0){
-          var userinfo=searchName.split(',');
-          this.username=userinfo[0];
-          this.password=userinfo[1];
+      //非pugongying或者不传账号密码的情况下，参数直接获取文本框输入的数据
+      if(searchText.indexOf('pugongying')==-1){
+        userpwd=this.Base64.encode(this.password);
+      }else if(searchText.indexOf('pugongying')>-1){
+        if(searchName==='undefined'){
+          userpwd=this.Base64.encode(this.password);
         }
       }
-
+      
+      
       var params = {
         username: this.username,
-        password: this.Base64.encode(this.password)
+        password: userpwd
       };
       this.validateLogin(params);
       if (!this.islogin) {
         return;
       }
-
-      // fetch("http://101.37.24.216:3003/login", {
-      //   method: "POST",
-      //   mode: "cors",
-      //   cache: "default",
-      //   headers: {
-      //     Accept: "application/json",
-      //     // 'Access-Control-Allow-Origin': '*',
-      //     "Content-Type": "application/x-www-form-urlencoded"
-      //   },
-      //   body: `username=${this.username}&password=${this.Base64.encode(this.password)}`
-      // }).then(res => {
-      //   console.log(res.json());
-      // });
-
-      // userLogin(this.username,this.Base64.encode(this.password)).then(res=>{
-      //   console.log(res)
-      // })
-
 
       this.$httpPost("login", params, function(err, data) {
         if (err) {
@@ -100,10 +93,10 @@ export default {
 
             /**登录成功后，传账号密码给封壳 */
             //封壳方法，传递账号跟密码
-            // if(searchText.indexOf('pugongying')>-1){
-            //   var message=''+self.username+','+self.password+'';
-            //   window.webkit.messageHandlers.userinfoC.postMessage(message);
-            // }
+            if(searchText.indexOf('pugongying')>-1){
+              var message=''+self.username+','+self.Base64.encode(self.password)+'';
+              window.webkit.messageHandlers.userinfoC.postMessage(message);
+            }
 
             self.setGuid(data.data.guid);
             self.setLocalStorageValue("userinfo", data.data);
