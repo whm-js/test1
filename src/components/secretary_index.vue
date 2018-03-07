@@ -75,12 +75,17 @@ export default {
       this.selected = "secretary_enter";
       this.selectedName = "入科管理";
     }
+    this.$router.push({
+      path: "secretary_enter",
+      name: "secretary_enter",
+      query: { id: 1 }
+    });
   },
-  beforeRouteEnter(to, from, next) {
+  beforeRouteUpdate(to, from, next) {
     var fromUrl = from.path;
-    console.log(fromUrl);
+    // console.log(fromUrl);
     next(vm => {
-      // vm.fromUrl = from.path;
+      vm.selected = "";
     });
   },
   activated() {

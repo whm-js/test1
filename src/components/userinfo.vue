@@ -85,8 +85,9 @@
       if (this.guid !== this.getLocalStorageValue('userinfo').guid || this.userinfoData === '') {
         this.guid = this.getLocalStorageValue('userinfo').guid;
         //刷新／激活数据写在此处,每次打开页面请求最新的数据
-        this.getUserInfo();
+        //this.getUserInfo();
       }
+      this.getUserInfo();
     },
     data() {
       return {

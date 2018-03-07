@@ -19,7 +19,7 @@
               <span :class="item.IsPracticingPhysician ? 'flag-z':'flag-z-gray'">执</span>
             </el-tooltip>
             <el-tooltip placement="bottom" effect="light" :hide-after="showtime">
-              <div slot="content">{{item.IsPracticingPhysician ? '无处方权':'有处方权'}}</div>
+              <div slot="content">{{item.IsPrescriptionRight ? '有处方权':'无处方权'}}</div>
               <span :class="item.IsPrescriptionRight ? 'flag-c':'flag-c-gray'">处</span>
             </el-tooltip>
           </div>

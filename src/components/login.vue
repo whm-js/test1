@@ -33,7 +33,7 @@
 import { Indicator } from "mint-ui";
 import store from "@/store/store";
 import { mapState, mapMutations, mapGetters } from "vuex";
-import { userLogin,getUserInfo } from "@/service/getData";
+// import { userLogin,getUserInfo } from "@/service/getData";
 export default {
   name: "Vue",
   data() {
@@ -49,6 +49,19 @@ export default {
   methods: {
     login: function() {
       var self = this;
+
+      var searchUrl = window.location.href;
+      var searchData = searchUrl.split("="); //截取 url中的“=”,获得“=”后面的参数
+      var searchText = decodeURI(searchData[1]); //decodeURI解码
+      var searchName = decodeURI(searchData[2]);
+      if(searchText.indexOf('pugongying')>-1){
+        if(searchName.length>0){
+          var userinfo=searchName.split(',');
+          this.username=userinfo[0];
+          this.password=userinfo[1];
+        }
+      }
+
       var params = {
         username: this.username,
         password: this.Base64.encode(this.password)
@@ -76,6 +89,7 @@ export default {
       //   console.log(res)
       // })
 
+
       this.$httpPost("login", params, function(err, data) {
         if (err) {
           return;
@@ -83,6 +97,14 @@ export default {
         //只有学员才能登陆
         switch (data.data.code) {
           case 0:
+
+            /**登录成功后，传账号密码给封壳 */
+            //封壳方法，传递账号跟密码
+            // if(searchText.indexOf('pugongying')>-1){
+            //   var message=''+self.username+','+self.password+'';
+            //   window.webkit.messageHandlers.userinfoC.postMessage(message);
+            // }
+
             self.setGuid(data.data.guid);
             self.setLocalStorageValue("userinfo", data.data);
             self.$store.commit("updataguid", data.data.guid);

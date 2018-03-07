@@ -101,7 +101,8 @@ export default {
           for(var i=0;i<pickerArray.length;i++){
             pickerArray[i].NameStr = pickerArray[i].RealName+'(已带教'+pickerArray[i].StudentCount+'人)'
           }
-          that.slots[0].values=pickerArray;
+          // that.slots[0].values=pickerArray;
+          that.$set(that.slots[0], 'values', pickerArray)
         } else {
           return [];
         }
