@@ -11,10 +11,10 @@
 
       <div class="panel-title">
           <div class="panel-title-left">评价项目及考核指标</div>
-          <div class="panel-title-right">总分：{{SuggestionData.Score ? SuggestionData.Score:'-'}}</div>
+          <div class="panel-title-right">总分：{{SuggestionData&&SuggestionData.Score ? SuggestionData.Score:'-'}}</div>
       </div>
       <!--如果库中存在评价json-->
-      <template v-if="SuggestionData.Content"> 
+      <template v-if="SuggestionData&&SuggestionData.Content"> 
         <div v-for="item in TeachingJsons">
           <div class="evaluate-panel">
             <h4 class="evaluate-title">{{item.ItemName}}（{{item.ItemScore}}分）</h4>
@@ -49,14 +49,14 @@
         <h4 class="evaluate-title">意见或建议</h4>
         <ul style="width:100%;">
           <li class="evaluate-item" style="padding-top:10px;padding-bottom:5px;overflow: hidden;word-break: break-all;">
-            {{SuggestionData.Suggestion}}
+            {{SuggestionData&&SuggestionData.Suggestion ? SuggestionData.Suggestion:'-'}}
           </li>
         </ul>
       </div>
 
       <div class="panel-title" style="margin-top:20px;">
           <div class="panel-title-left2">整体评价：</div>
-          <div class="panel-title-right2">{{SuggestionData.OverallEval ? SuggestionData.OverallEval : '-'}}</div>
+          <div class="panel-title-right2">{{SuggestionData&&SuggestionData.OverallEval ? SuggestionData.OverallEval : '-'}}</div>
       </div>
 
       <div class="exit-footer">
@@ -124,7 +124,7 @@
               return;
             }
             var teacherName=this.$route.query.teacherName;
-            if(!teacherName){
+            if(!teacherName&&!teacherId){
               this.$messagebox('温馨提示', '页面请求无效，请重新进入！').then(action => {
                 this.$router.push('/');
               });
@@ -145,7 +145,7 @@
             var that = this;
             that.$httpPost('rotate/getSuggestion', params, function (err, json) {
               that.SuggestionData= json.data.data[0];
-              if (that.SuggestionData.Content) {
+              if (that.SuggestionData&&that.SuggestionData.Content) {
                 that.TeachingJsons = that.$route.query.checkExitType ? JSON.parse(that.SuggestionData.Content).EvaluationItems:JSON.parse(that.SuggestionData.Content).TeachingItems;
               } else{
                 that.TeachingJsons = that.$route.query.checkExitType ? Evaluationdata.EvaluationItems:Teachingdata.TeachingItems;
@@ -186,6 +186,7 @@
           },
           //页面头部返回事件控制
           backClick:function(){
+            this.$store.commit("updataUserExitData", ''); //清空：缓存学员出科数据，在出科详情的第三个页面用到：展示个人小结和带教老师评语
             var path = this.$route.query.checkExitType ? '/teacher_index/teacher_exit/':'/index/rotate_department/';
             this.$router.push({
               path:path,

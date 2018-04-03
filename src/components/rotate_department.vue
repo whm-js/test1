@@ -25,7 +25,7 @@
           <div class="li-wrap border-btm">
             <span class="li-title text-left">实际时间</span>
             <span class="li-content text-right font-grey" v-show="curQueryInfo.RotateStatus>=100&&curQueryInfo.RotateStatus<=114">{{curQueryInfo.RealityStartDate}}至-</span>
-            <span class="li-content text-right font-grey" v-show="curQueryInfo.RotateStatus===200">{{curQueryInfo.PlanStartDate}}至{{curQueryInfo.PlanEndDate}}</span>
+            <span class="li-content text-right font-grey" v-show="curQueryInfo.RotateStatus===200">{{curQueryInfo.RealityStartDate}}至{{curQueryInfo.RealityEndDate}}</span>
           </div>
         </li>
         <li class="li">

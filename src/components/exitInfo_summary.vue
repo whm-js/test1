@@ -11,21 +11,17 @@
       <div>
         <div class="summary-panel">
           <h4 class="summary-title">个人小结：</h4>
-          <div class="summary-text" v-if="!this.$store.state.UserExitData">-</div>
-          <div class="summary-text" v-else-if="this.$store.state.UserExitData.PersonalSummary">
-            {{this.$store.state.UserExitData.PersonalSummary}}
+          <div class="summary-text">
+            {{UserExitData&&UserExitData.PersonalSummary ? UserExitData.PersonalSummary:'-'}}
           </div>
-          <div class="summary-text" v-else>-</div>
         </div>
 
         <br/>
         <div class="summary-panel">
           <h4 class="summary-title">带教老师评语：</h4>
-          <div class="summary-text" v-if="!this.$store.state.UserExitData">-</div>
-          <div class="summary-text" v-else-if="this.$store.state.UserExitData.TeacherComment">
-            {{this.$store.state.UserExitData.TeacherComment}}
+          <div class="summary-text">
+            {{UserExitData&&UserExitData.TeacherComment ? UserExitData.TeacherComment:'-'}}
           </div>
-          <div class="summary-text" v-else>-</div>
         </div>
       </div>
       <div style="height:100px;"></div>
@@ -47,6 +43,7 @@ export default {
   components: {},
   data() {
     return {
+      UserExitData: {},
       role: "",
       pagecount: "",
       curcount: "",
@@ -126,10 +123,8 @@ export default {
         createYear: year
       };
       this.$httpPost("exit/getExitCourseInfoByID", params, function(err, json) {
-        if (json.data.data.length >= 1) {
-          that.UserExitData = json.data.data[0];
-        }
-        that.$store.commit("updataUserExitData", that.UserExitData); //缓存学员出科数据，在出科详情的第三个页面用到：展示个人小结和带教老师评语
+        that.UserExitData = json.data.data[0];
+        //that.$store.commit("updataUserExitData", that.UserExitData); //缓存学员出科数据，在出科详情的第三个页面用到：展示个人小结和带教老师评语
       });
     },
     nextStep: function() {
@@ -213,6 +208,7 @@ export default {
     },
     //页面头部返回事件控制
     backClick: function() {
+      this.$store.commit("updataUserExitData", ''); //清空：缓存学员出科数据，在出科详情的第三个页面用到：展示个人小结和带教老师评语
       var path = "/index/rotate_department/";
       switch (this.role) {
         case "学员":

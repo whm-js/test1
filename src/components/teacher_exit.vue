@@ -332,6 +332,11 @@ export default {
     this.$store.commit("updatateacher_indexSelected", "teacher_exit");
     this.role = this.getLocalStorageValue("userinfo").role;
     var type = this.$route.query.checkExitType;
+    var type1 = this.$route.query.exitSuccess;
+    if(type1 === 'success'){
+      this.getExitDataInfo();
+      return;
+    }
     if (type != undefined && type != null) {
       var index = type.split("_")[1];
       switch (index) {

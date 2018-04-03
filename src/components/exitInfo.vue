@@ -13,19 +13,16 @@
         <tbody>
           <tr>
             <td>考核结果</td>
-            <td style="width:98px;" v-if="UserExitData.AppraiseResult==undefined">-</td>
-            <td style="width:98px;color:#5cb85c;" v-else-if="UserExitData.AppraiseResult==1">通过</td>
-            <td style="width:98px;color:red;" v-else-if="UserExitData.AppraiseResult==0">不通过</td>
+            <td style="width:98px;" v-if="!UserExitData">-</td>
+            <td style="width:98px;color:#5cb85c;" v-else>{{UserExitData.AppraiseResult==1 ?'通过':'不通过'}}</td>
           </tr>
           <tr>
             <td>理论考试成绩</td>
-            <td v-if="UserExitData.TheoryScore==undefined">-</td>
-            <td v-else>{{UserExitData.TheoryScore}}</td>
+            <td>{{UserExitData&&UserExitData.TheoryScore ? UserExitData.TheoryScore:'-'}}</td>
           </tr>
           <tr>
             <td>技能考试成绩</td>
-            <td v-if="UserExitData.SkillScore==undefined">-</td>
-            <td v-else>{{UserExitData.SkillScore}}</td>
+            <td>{{UserExitData&&UserExitData.SkillScore ? UserExitData.SkillScore:'-'}}</td>
           </tr>
         </tbody>
       </table>
@@ -36,33 +33,27 @@
         <tbody>
           <tr>
             <td>是否全勤</td>
-            <td style="width:98px;" v-if="UserExitData.IsFullAttendance==undefined">-</td>
-            <td style="width:98px;" v-else>{{UserExitData.IsFullAttendance}}</td>
+            <td style="width:98px;">{{UserExitData&&UserExitData.IsFullAttendance ? UserExitData.IsFullAttendance:'-'}}</td>
           </tr>
           <tr>
             <td>事假（次）</td>
-            <td v-if="UserExitData.PersonalLeave==undefined">-</td>
-            <td v-else>{{UserExitData.PersonalLeave}}</td>
+            <td>{{UserExitData&&UserExitData.PersonalLeave ? UserExitData.PersonalLeave:'-'}}</td>
           </tr>
           <tr>
             <td>病假（次）</td>
-            <td v-if="UserExitData.SickLeave==undefined">-</td>
-            <td v-else>{{UserExitData.SickLeave}}</td>
+            <td>{{UserExitData&&UserExitData.SickLeave ? UserExitData.SickLeave:'-'}}</td>
           </tr>
           <tr>
             <td>公休假（次）</td>
-            <td v-if="UserExitData.SabbaticalLeave==undefined">-</td>
-            <td v-else>{{UserExitData.SabbaticalLeave}}</td>
+            <td>{{UserExitData&&UserExitData.SabbaticalLeave ? UserExitData.SabbaticalLeave:'-'}}</td>
           </tr>
           <tr>
             <td>迟到（次）</td>
-            <td v-if="UserExitData.Late==undefined">-</td>
-            <td v-else>{{UserExitData.Late}}</td>
+            <td>{{UserExitData&&UserExitData.Late ? UserExitData.Late:'-'}}</td>
           </tr>
           <tr>
             <td>旷工（次）</td>
-            <td v-if="UserExitData.Absenteeism==undefined">-</td>
-            <td v-else>{{UserExitData.Absenteeism}}</td>
+            <td>{{UserExitData&&UserExitData.Absenteeism ? UserExitData.Absenteeism:'-'}}</td>
           </tr>
         </tbody>
       </table>
@@ -74,7 +65,7 @@
         </thead>
         <tbody>
           <!--如果库中存在医德医风json-->
-          <template v-if="UserExitData.MedicalEthics">
+          <template v-if="UserExitData&&UserExitData.MedicalEthics">
             <template v-for="item in JSON.parse(UserExitData.MedicalEthics)">
               <template v-if="item.ItemList.length==1">
                 <tr>
@@ -222,10 +213,8 @@ export default {
         createYear: year
       };
       this.$httpPost("exit/getExitCourseInfoByID", params, function(err, json) {
-        if (json.data.data.length >= 1) {
-          that.UserExitData = json.data.data[0];
-        }
-        that.$store.commit("updataUserExitData", that.UserExitData); //缓存学员出科数据，在出科详情的第三个页面用到：展示个人小结和带教老师评语
+        that.UserExitData = json.data.data[0];
+        //that.$store.commit("updataUserExitData", that.UserExitData); //缓存学员出科数据，在出科详情的第三个页面用到：展示个人小结和带教老师评语
       });
     },
     //进入下一个页面
@@ -262,6 +251,7 @@ export default {
     },
     //页面头部返回事件控制
     backClick: function() {
+      this.$store.commit("updataUserExitData", ''); //清空：缓存学员出科数据，在出科详情的第三个页面用到：展示个人小结和带教老师评语
       // var path = this.$route.query.checkExitType ? '/teacher_index/teacher_exit/':'/index/rotate_department/';
 
       var path = "/index/rotate_department/";

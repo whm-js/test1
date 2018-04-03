@@ -195,7 +195,7 @@ body {
   height: auto;
 }
 .login .logo {
-  z-index: 9;
+  /* z-index: 9; */
   position: relative;
   top: 0px;
   left: 0px;
