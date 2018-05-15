@@ -35,7 +35,7 @@
             this.cleanInput();
             this.guid=this.getLocalStorageValue('userinfo').guid;
         },
-        data(){ 
+        data(){
             return{
                 olbpwd1:'',
                 newpwd1:'',
@@ -64,7 +64,7 @@
                 else if(that.newpwd1!=that.newpwd2){
                     this.$Toast('两次填写的密码不一致');
                 }
-                else if(that.newpwd1.length<6||that.newpwd1.lengt>12){
+                else if(!that.newpwd1.match(/^[a-zA-Z0-9]{6,12}$/)||that.newpwd1.length<6||that.newpwd1.lengt>12){
                     this.$Toast('请输入正确的密码格式，密码为6-12位，由数字，字母组成');
                 }else{
                     var parems={
@@ -79,17 +79,17 @@
                                 that.$Toast('原始密码错误');
                             }else if(json.data.state==0){
                                 that.$messagebox.confirm('修改成功，请重新登录').then(action => {
-                                    that.$router.push({ 
+                                    that.$router.push({
                                         path: '/login',
                                         name: 'login',
                                         });
                                 });
                             }
-                            
+
                         }
                     });
                 }
-                
+
             },
             olbpwd(){
                 alert(0);

@@ -23,11 +23,11 @@
 
     <ul class="nav">
 
-      <li id="tabTitle1" v-bind:class="{active:tabtag==='tabContent1'}" v-on:click="tabClick(1,'0')">未批准</li>
+      <li id="tabTitle1" :style="{width:tabwidth}" v-bind:class="[{active:tabtag==='tabContent1'},'tabli1']" v-if="hospitalId!==1" v-on:click="tabClick(1,'0')">未批准</li>
 
-      <li id="tabTitle2" v-bind:class="{active:tabtag==='tabContent2'}" v-on:click="tabClick(2,'2')">未确认入科</li>
+      <li id="tabTitle2" :style="{width:tabwidth}" v-bind:class="{active:tabtag==='tabContent2','tabli1':hospitalId===1,'tabli2':hospitalId!==1}" v-on:click="tabClick(2,'2')">未确认入科</li>
 
-      <li id="tabTitle3" v-bind:class="{active:tabtag==='tabContent3'}" v-on:click="tabClick(3,'100,101,102,114,200')">已入科</li>
+      <li id="tabTitle3" :style="{width:tabwidth}" v-bind:class="[{active:tabtag==='tabContent3'},'tabli3']" v-on:click="tabClick(3,'100,101,102,114,200')">已入科</li>
 
     </ul>
 
@@ -63,116 +63,6 @@
 
     <!--已出科 end-->
 
-    <!--学员个人信息弹窗-->
-
-    <!-- <div class="popup">
-
-      <div><img src="../assets/userHeader.png" width="100px" style="margin: 0 auto;padding-top:10px;" /></div>
-
-      <div class="close" @click="closeStudentInfo"><img src="../assets/close.png" /></div>
-
-      <ul>
-
-        <li>
-
-          <div>姓名</div>
-
-          <div class="fontColor">{{StudentInfoData.RealName}}</div>
-
-        </li>
-
-        <li>
-
-          <div>性别</div>
-
-          <div class="fontColor">{{StudentInfoData.Sex ? '男':'女'}}</div>
-
-        </li>
-
-        <li>
-
-          <div>学员身份</div>
-
-          <div class="fontColor">{{StudentInfoData.Education?StudentInfoData.Education:'-'}}</div>
-
-        </li>
-
-        <li>
-
-          <div>培训学科</div>
-
-          <div class="fontColor">{{StudentInfoData.CourseName}}</div>
-
-        </li>
-
-        <li>
-
-          <div>培训年限</div>
-
-          <div class="fontColor">{{StudentInfoData.TrainingYears===1?'一年制':StudentInfoData.TrainingYears===2?'二年制':StudentInfoData.TrainingYears===3?'三年制':''}}</div>
-
-        </li>
-
-        <li>
-
-          <div>年级批次</div>
-
-          <div class="fontColor">{{StudentInfoData.GradeBatch}}</div>
-
-        </li>
-
-        <li>
-
-          <div>是否具有处方权</div>
-
-          <div class="fontColor">{{StudentInfoData.IsPrescriptionRight ? '有':'无'}}</div>
-
-        </li>
-
-        <li>
-
-          <div>是否执业医师</div>
-
-          <div class="fontColor">{{StudentInfoData.IsPracticingPhysician ? '是':'否'}}</div>
-
-        </li>
-
-        <li>
-
-          <div>执业证编码</div>
-
-          <div class="fontColor">{{StudentInfoData.PracticeCode?StudentInfoData.PracticeCode:'-'}}</div>
-
-        </li>
-
-        <li>
-
-          <div>是否在协同基地培训</div>
-
-          <div class="fontColor">{{StudentInfoData.isXTBase?'是':'否'}}</div>
-
-        </li>
-
-        <li>
-
-          <div>协同基地名称</div>
-
-          <div class="fontColor">{{StudentInfoData.XTBase?StudentInfoData.XTBase:'-'}}</div>
-
-        </li>
-
-        <li>
-
-          <div>工作单位</div>
-
-          <div class="fontColor">{{StudentInfoData.WorkPlace?StudentInfoData.WorkPlace:'-'}}</div>
-
-        </li>
-
-      </ul>
-
-    </div> -->
-
     <!--日期控件弹窗-->
 
     <mt-popup v-model="popupVisiblePicker" position="bottom" style="width:100%;">
@@ -202,11 +92,12 @@ export default {
 
   components: { studentList },
 
-  data() {
+  data () {
     return {
       guid: this.getLocalStorageValue("userinfo").guid,
       role: "",
-
+      hospitalId: -1,
+      tabwidth: '33%',
       ExitData: [],
 
       rotateStatus: "",
@@ -309,7 +200,7 @@ export default {
 
   computed: {},
 
-  created() {
+  created () {
     var index = this.checkExitType.split("_")[1];
     switch (index) {
       case "1": //未申请出科
@@ -349,12 +240,16 @@ export default {
     this.getExitDataInfo();
   },
 
-  activated() {
+  activated () {
     this.$store.commit("updatasecretary_indexSelected", "secretary_enter");
     // if (this.guid != this.getLocalStorageValue("userinfo").guid) {
     //   this.guid = this.getLocalStorageValue("userinfo").guid;
     // }
     this.role = this.getLocalStorageValue("userinfo").role;
+    this.hospitalId = this.getLocalStorageValue("userinfo").hospitalId;
+    if(this.hospitalId ===1){
+      this.tabwidth = '49.9%'
+    }
 
     var type = this.$route.query.checkExitType;
     if (type != undefined && type != null) {
@@ -408,8 +303,10 @@ export default {
   methods: {
     //tab页签单击事件
 
-    tabClick: function(index, rotateStatus) {
+    tabClick: function (index, rotateStatus) {
       //请求接口获取对应tab页签数据
+
+      
 
       this.ExitData = [];
 
@@ -422,11 +319,11 @@ export default {
       this.tabtag = "tabContent" + index;
     },
     //弹窗展示出科时间选择插件
-    openDatePicker: function() {
+    openDatePicker: function () {
       this.popupVisiblePicker = true;
     },
     //选择日期的改变事件
-    onValuesChange: function(picker, values) {
+    onValuesChange: function (picker, values) {
       var date = "月01日";
       if (values[2] == 16) {
         date = "月16日";
@@ -435,10 +332,10 @@ export default {
       // this.planStartDate = values[0]+'年'+values[1] + date;
     },
     //关闭日期控件弹窗
-    cancelHide: function() {
+    cancelHide: function () {
       this.popupVisiblePicker = false;
     },
-    confirmdate: function() {
+    confirmdate: function () {
       if (this.selectDate === this.planStartDate) {
         return;
       }
@@ -448,7 +345,7 @@ export default {
     },
     //获取学员出科列表信息
 
-    getExitDataInfo: function() {
+    getExitDataInfo: function () {
       // var guid = this.guid;
 
       if (!this.guid) {
@@ -459,6 +356,9 @@ export default {
         );
 
         return;
+      }
+      if (this.rotateStatus == 2 && this.hospitalId === 1) {
+        this.rotateStatus = '0,2'
       }
 
       var that = this;
@@ -500,7 +400,7 @@ export default {
         showCount: 10
       };
 
-      this.$httpPost("exit/getRotatePlanList", params, function(err, json) {
+      this.$httpPost("exit/getRotatePlanList", params, function (err, json) {
         that.ExitData = json.data.data;
       });
     }
@@ -560,13 +460,12 @@ body {
   text-align: center;
   background: #ccc;
 }
-.secretary_enter .nav > li:nth-child(1) {
-  width: 35%;
+/* .secretary_enter .nav > li:nth-child(1) {
+  width: 49.9%;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 }
 .secretary_enter .nav > li:nth-child(2) {
-  width: 31%;
   border-left: 1px solid #ddd;
   border-right: 1px solid #ddd;
 }
@@ -574,7 +473,23 @@ body {
   width: 33.31%;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
+} */
+
+.secretary_enter .tabli1 {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
 }
+
+.secretary_enter .tabli2 {
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+
+.secretary_enter .tabli3 {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
 .secretary_enter .nav .active {
   background: #37acd3;
   color: #fff;

@@ -6,15 +6,19 @@
     <div>
       <mt-field label="理论考核成绩" type="number" placeholder="请输入考核成绩" v-model="TheoryScore"></mt-field>
       <mt-field label="技能考核成绩" type="number" placeholder="请输入考核成绩" v-model="SkillScore"></mt-field>
+      <mt-field label="考核总成绩" type="number" placeholder="请输入考核总成绩" v-model="totalScore"></mt-field>
       <mt-field label="考核结果" readonly="readonly" placeholder="">
-        <label style="margin-left:10px;">
-          <input type="radio" :checked="isFullAttend==1" name="attend-radio" value="1" v-on:change="attendChange($event)" /> 考核通过
+        <label style="margin-left:50px;float:left;">
+          <input type="radio" :checked="isFullAttend==1" name="attend-radio" value="1" v-on:change="attendChange($event)" /> 合格，准与出科
         </label>
-        <label style="margin-left:20px;">
-          <input type="radio" :checked="isFullAttend==0" name="attend-radio" value="0" v-on:change="attendChange($event)" /> 考核不通过
+        <label style="margin-left:50px;float:left;">
+          <input type="radio" :checked="isFullAttend==2" name="attend-radio" value="2" v-on:change="attendChange($event)" /> 基本合格，准与出科，需补足培训任务
+        </label>
+        <label style="margin-left:50px;float:left;">
+          <input type="radio" :checked="isFullAttend==0" name="attend-radio" value="0" v-on:change="attendChange($event)" /> 不合格，不予出科
         </label>
       </mt-field>
-
+      <mt-field label="对学员培训任务完成情况的评价" placeholder="请输入评价" v-model="MissionEval"></mt-field>
       <div @click="open('datePicker')">
         <mt-field label="实际出科时间" type="text" readonly="readonly" disableClear placeholder="" v-model="exitTime"></mt-field>
       </div>
@@ -34,11 +38,13 @@
 <script>
 var that;
 export default {
-  data() {
+  data () {
     return {
       guid: this.getLocalStorageValue("userinfo").guid,
       TheoryScore: "",
       SkillScore: "",
+      totalScore: "",
+      MissionEval:"",
       isFullAttend: 1,
       exitTime: this.$formatDate(
         new Date(this.$route.query.planEndDate),
@@ -50,7 +56,7 @@ export default {
     };
   },
   methods: {
-    preStep() {
+    preStep () {
       this.$router.push({
         path: "/exitInfo_summary",
         name: "exitInfo_summary",
@@ -67,7 +73,7 @@ export default {
         }
       });
     },
-    exitClick() {
+    exitClick () {
       if (this.TheoryScore === "") {
         this.$Toast("请输入考核成绩!");
         return;
@@ -101,9 +107,11 @@ export default {
         TheoryScore: this.TheoryScore,
         SkillScore: this.SkillScore,
         AppraiseResult: this.isFullAttend,
-        RealityEndDate: this.exitTime
+        RealityEndDate: this.exitTime,
+        TotalScore: this.totalScore,
+        MissionEval: this.MissionEval
       };
-      this.$httpPost("exit/exit_leaderComment", params, function(err, json) {
+      this.$httpPost("exit/exit_leaderComment", params, function (err, json) {
         if (json.status == 200) {
           if (that.isFullAttend == 0) {
             that.$Toast("出科审核提交成功!");
@@ -129,32 +137,33 @@ export default {
         }
       });
     },
-    backClick: function() {
+    backClick: function () {
       this.$router.push("/secretary_index/secretary_exit/");
     },
-    attendChange(event) {
+    attendChange (event) {
       //性别点击事件
       var value = event.currentTarget.value;
       value = Number(value);
       this.isFullAttend = value;
+      // console.log(this.isFullAttend)
     },
-    open: function(picker) {
+    open: function (picker) {
       this.$refs[picker].open();
     },
-    handleChange: function(value) {
+    handleChange: function (value) {
       this.dateValue = this.$formatDate(new Date(value), "yyyy-MM-dd");
       this.exitTime = this.dateValue;
     }
   },
-  created() {
+  created () {
     that = this;
   },
-  activated() {
+  activated () {
     if (this.guid !== this.getLocalStorageValue("userinfo").guid) {
       this.guid = this.getLocalStorageValue("userinfo").guid;
     }
-    this.TheoryScore = this.$store.state.UserExitData.TheoryScore?this.$store.state.UserExitData.TheoryScore:"";
-    this.SkillScore = this.$store.state.UserExitData.SkillScore?this.$store.state.UserExitData.SkillScore:"";
+    this.TheoryScore = this.$store.state.UserExitData.TheoryScore ? this.$store.state.UserExitData.TheoryScore : "";
+    this.SkillScore = this.$store.state.UserExitData.SkillScore ? this.$store.state.UserExitData.SkillScore : "";
     this.isFullAttend = this.$store.state.UserExitData.AppraiseResult;
   }
 };

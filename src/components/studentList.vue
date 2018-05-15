@@ -36,7 +36,7 @@
         </div>
 
         <div>
-          <div v-if="item.RotateStatus=='2'&&fromType==='secretary_enter'" class="btn btnBlue" style="float:right;" v-on:click="examineEnterInfo(item)">确认入科</div>
+          <div v-if="(item.RotateStatus=='2'&&fromType==='secretary_enter')||(item.RotateStatus=='0'&&fromType==='secretary_enter'&&hospitalId===1)" class="btn btnBlue" style="float:right;" v-on:click="examineEnterInfo(item)">确认入科</div>
           <div v-if="fromType==='secretary_exit'||fromType==='teacher_exit'" class="btn" style="float:left;" v-on:click="checkHandBook(item)">轮转手册</div>
           <div v-if="fromType==='secretary_exit'" style="float:right;font-size: 16px;margin-right: 10px;font-weight: bold;">{{showRotateStatus(item.RotateStatus)}}</div>
           <div v-if="item.RotateStatus==101&&fromType==='teacher_exit'" class="btn btnBlue" style="float:right;" v-on:click="writeComments(item,'add')">填写评语</div>
@@ -85,7 +85,8 @@ export default {
       // fromType: "",
       routerUrl: this.$route.path,
       popupVisible: false,
-      studentID: ""
+      studentID: "",
+      hospitalId: -1
     };
   },
   watch: {
@@ -102,7 +103,9 @@ export default {
     //   this.checkExitType = newdata;
     // }
   },
-  activated() {},
+  activated() {
+    this.hospitalId = this.getLocalStorageValue("userinfo").hospitalId;
+  },
   methods: {
     showRotateTime(el) {
       var date1 = el.PlanStartDate.replace(/-/g, "/");

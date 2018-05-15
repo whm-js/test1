@@ -52,31 +52,31 @@ export default {
   components: {},
   created() {
     //第一次打开界面的时候，判断如果是苹果设备--封壳中传了参数pugongying，再次判断参数中是否包含账号密码，直接登录
-    if(searchText.indexOf('pugongying')>-1){
+    /*if(searchText.indexOf('pugongying')>-1){
         if(searchName.length>0 && searchName!='undefined'){
           var userinfo=searchName.split(',');
           this.username=userinfo[0];
           userpwd=userinfo[1];
           this.login();
         }
-      }
+      }*/
   },
   methods: {
     login: function() {
       var self = this;
-      //非pugongying或者不传账号密码的情况下，参数直接获取文本框输入的数据
+      /*//非pugongying或者不传账号密码的情况下，参数直接获取文本框输入的数据
       if(searchText.indexOf('pugongying')==-1){
         userpwd=this.Base64.encode(this.password);
       }else if(searchText.indexOf('pugongying')>-1){
         if(searchName==='undefined'){
           userpwd=this.Base64.encode(this.password);
         }
-      }
-      
-      
+      }*/
+
+
       var params = {
         username: this.username,
-        password: userpwd
+        password: this.Base64.encode(this.password)
       };
       this.validateLogin(params);
       if (!this.islogin) {

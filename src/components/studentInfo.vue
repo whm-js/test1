@@ -1,7 +1,7 @@
 <template>
     <mt-popup v-model="popupvalue" position="middle" modal="true">
         <div class="popup">
-            <div><img src="../assets/userHeader.png" width="100px" style="margin: 0 auto;padding-top:10px;" /></div>
+            <div><img src="../assets/userHeader.png" style="width:100px;margin: 0 auto;padding-top:10px;" /></div>
             <div class="close" @click="closeChild"><img src="../assets/close.png" /></div>
             <ul v-if="StudentInfoData!=''">
                 <li>

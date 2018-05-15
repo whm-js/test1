@@ -1,0 +1,4 @@
+// 学员个人小结
+export const SET_SUMMARYINFO = 'SET_SUMMARYINFO'
+// 老师评语
+export const SET_TEACHERCOMMENT = 'SET_TEACHERCOMMENT'

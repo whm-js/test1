@@ -10,7 +10,9 @@
             <img src="../assets/userHeader.png" style="margin: 0 auto;" />
         </div>
         <div id="editInfo">
-            <mt-field label="姓名" type="text" placeholder="请输入姓名" v-model="userinfoData.RealName"></mt-field>
+            <mt-field label="姓名" type="textarea" rows="5" placeholder="请输入姓名" v-model="userinfoData.RealName">
+              <span>aaa</span>
+            </mt-field>
             <mt-field label="性别" readonly="readonly" placeholder="">
                 <label style="margin-left:10px;">
                     <input type="radio" :checked="isFullAttend===1" name="attend-radio" value="1" v-on:change="attendChange($event)" /> 男

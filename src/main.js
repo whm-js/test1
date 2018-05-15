@@ -33,8 +33,10 @@ import { Popup } from 'mint-ui';
 import { Toast } from 'mint-ui';
 import { Rate } from 'element-ui';
 Vue.use(Rate)
-import { Tooltip } from "element-ui";
+import { Tooltip, Upload, Dialog } from "element-ui";
 Vue.use(Tooltip);
+Vue.use(Upload)
+Vue.use(Dialog)
 
 Vue.component(Cell.name, Cell);
 Vue.component(TabContainer.name, TabContainer);
@@ -52,8 +54,6 @@ Vue.component(Radio.name, Radio);
 
 import { DatetimePicker } from 'mint-ui';
 Vue.component(DatetimePicker.name, DatetimePicker);
-
-
 
 Vue.component(Spinner.name, Spinner);
 Vue.component(Popup.name, Popup);

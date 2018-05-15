@@ -2,7 +2,7 @@
   <div>
     <mt-header fixed :title="selectedName" style="background-color:#37acd3;font-size:16px;">
       <router-link to="" slot="left">
-        <img v-show="selected!='secretary_userinfo'" width="35px;" src="../assets/user.png" />
+        <img v-show="selected!='secretary_userinfo'" style="width:35px;" src="../assets/user.png" />
       </router-link>
     </mt-header>
     <keep-alive>
@@ -64,10 +64,10 @@ export default {
     var path = this.$route.path;
     if (path.indexOf("secretary_exit") > -1) {
       this.selected = "secretary_exit";
-      this.selectedName = "入科管理";
-    } else if (path.indexOf("secretary_details") > -1) {
-      this.selected = "secretary_details";
       this.selectedName = "出科管理";
+    } else if (path.indexOf("secretary_enter") > -1) {
+      this.selected = "secretary_enter";
+      this.selectedName = "入科管理";
     } else if (path.indexOf("/userinfo") > -1) {
       this.selected = "secretary_userinfo";
       this.selectedName = "个人中心";
@@ -92,10 +92,10 @@ export default {
     var path = this.$route.path;
     if (path.indexOf("secretary_exit") > -1) {
       this.selected = "secretary_exit";
-      this.selectedName = "入科管理";
-    } else if (path.indexOf("secretary_details") > -1) {
-      this.selected = "secretary_details";
       this.selectedName = "出科管理";
+    } else if (path.indexOf("secretary_enter") > -1) {
+      this.selected = "secretary_enter";
+      this.selectedName = "入科管理";
     } else if (path.indexOf("/userinfo") > -1) {
       this.selected = "secretary_userinfo";
       this.selectedName = "个人中心";

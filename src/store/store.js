@@ -3,6 +3,7 @@
  */
 import Vue from 'vue';
 import Vuex from 'vuex';
+import * as types from './types'
 Vue.use(Vuex);
 
 const state = {
@@ -19,7 +20,9 @@ const state = {
   planData:[],
   handbooktable:{},
   handbookdetail:{},
-  detaildata:{}
+  detaildata:{},
+  summaryInfo:JSON.parse(localStorage.getItem('summaryInfo')) || {},
+  teacherComment:JSON.parse(localStorage.getItem('teacherComment')) || {}
 }
 
 const mutations={
@@ -64,6 +67,12 @@ const mutations={
   },
   updatadetaildata(state,detaildata){
     state.detaildata=detaildata;
+  },
+  [types.SET_SUMMARYINFO] (state, res) {
+    state.summaryInfo = res
+  },
+  [types.SET_TEACHERCOMMENT] (state, res) {
+    state.teacherComment = res
   }
 }
 
@@ -106,11 +115,29 @@ const getters = {
   },
   detaildata:function (state) {
     return state.detaildata;
+  },
+  summaryInfo:function (state) {
+    return state.summaryInfo;
+  },
+  teacherComment:function (state) {
+    return state.teacherComment;
   }
+}
+
+const actions = {
+  setsummaryInfo ({ commit }, res) {
+    localStorage.setItem('summaryInfo', JSON.stringify(res))
+    commit(types.SET_SUMMARYINFO, res)
+  },
+  setteacherComment ({ commit }, res) {
+    localStorage.setItem('teacherComment', JSON.stringify(res))
+    commit(types.SET_TEACHERCOMMENT, res)
+  },
 }
 
 export default new Vuex.Store({
   state,
   mutations,
-  getters
+  getters,
+  actions
 });

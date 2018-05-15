@@ -3,7 +3,7 @@
     <mt-header fixed :title="selectedName" style="background-color:#37acd3;font-size:16px;">
       <router-link to="" slot="left">
         <!--i class="icon iconfont icon-my_icon"></i-->
-        <img v-show="selected!='userinfo'" width="35px;" src="../assets/user.png" />
+        <img v-show="selected!='userinfo'" style="width:35px;" src="../assets/user.png" />
       </router-link>
     </mt-header>
     <keep-alive>

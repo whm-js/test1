@@ -41,6 +41,8 @@ import teacher_attendance from '@/components/teacher_attendance'  //学员考勤
 import teacher_evaluate from '@/components/teacher_evaluate'  //评价学员
 import teacher_summary from '@/components/teacher_summary'  //出科评语
 
+import eleupload from '@/components/eleupload' 
+
 Vue.use(Router)
 
 export default new Router({
@@ -172,7 +174,11 @@ export default new Router({
       path: '/teacher_summary',
       name: 'teacher_summary',
       component: teacher_summary
+    },
+    {
+      path: '/eleupload',
+      name: 'eleupload',
+      component: eleupload
     }
-
   ]
 })

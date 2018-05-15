@@ -4,7 +4,7 @@
       <mt-button icon="back" slot="left" @click.native="backClick"></mt-button>
     </mt-header>
     <div style="text-align: center;">
-      <img src="../assets/userHeader.png" width="100px" style="margin: 0 auto;padding-top:10px;" />
+      <img src="../assets/userHeader.png" style="margin: 0 auto;padding-top:10px;width:100px;" />
       <p style="font-size:16px;">{{RealName}}({{UserName}})</p>
       <p style="font-size:16px;">{{PlanStartDate}}至{{PlanEndDate}}</p>
     </div>

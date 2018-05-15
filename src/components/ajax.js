@@ -26,7 +26,7 @@ export default {
       }).then(function (response) {
         self.$Indicator.close();
         var data = JSON.parse(response.bodyText);
-        if (data.status == 200) {
+        if (data.status == 200 || data.status ==0) {
           callback(null, data)
         } else if (data.status == 201) {
           //登录失效
@@ -44,11 +44,11 @@ export default {
           }
         } else {
           self.$Toast({
-            message: '服务器异常',
-            position: 'bottom',
-            duration: 3000
+            message: data.msg,
+            position: 'top',
+            duration: 2000
           });
-          callback(data.msg)
+          // callback(data.msg)
         }
       }, function (err) {
         self.$Indicator.close();
@@ -72,7 +72,7 @@ export default {
       }).then(function (response) {
         self.$Indicator.close();
         var data = JSON.parse(response.bodyText);
-        if (data.status == 200) {
+        if (data.status == 200 || data.status ==0) {
           callback(null, data)
         } else if (data.status == 201) {
 
@@ -90,11 +90,11 @@ export default {
           }
         } else {
           self.$Toast({
-            message: '服务器异常',
-            position: 'bottom',
-            duration: 3000
+            message: data.msg,
+            position: 'top',
+            duration: 2000
           });
-          callback(data.msg)
+          // callback(data.msg)
         }
       }, function (err) {
         self.$Indicator.close();

@@ -123,13 +123,7 @@
           toSummary:function () {
             this.saveRateInfo();
             this.submitSuggestion();
-            this.$router.push({
-              path:'/student_summary',
-              name:'student_summary',
-              query:{
 
-              }
-            });
           },
           //评星change事件
           rateChange:function (e) {
@@ -194,8 +188,8 @@
             var rateJson=vueMdl.rateJson;
             var eval_queryInfo=vueMdl.eval_queryInfo;
             var teachingJson=vueMdl.TeachingJson;
-            if(eval_queryInfo.CoachingId===-1||eval_queryInfo.CoachingId===null){
-              vueMdl.$Toast('未被分配带教老师');
+            if(eval_queryInfo.CoachingId==0||eval_queryInfo.CoachingId===null){
+              vueMdl.$Toast('您未被分配带教老师');
                 return;
             }
             var params = {
@@ -226,6 +220,13 @@
 
               }
             }, 'json')
+            vueMdl.$router.push({
+              path:'/student_summary',
+              name:'student_summary',
+              query:{
+
+              }
+            });
           },
           //请求评分、建议、评级数据
           getSuggestionInfo:function () {
